@@ -26,10 +26,16 @@ Borra el ejemplo de abajo cuando escribas el primero.
 **Herramienta:** Claude Code
 
 ```
-Este es el ejemplo. Bórralo.
+contrasta las reglas con los últimos 15 commits del repositorio y las reglas de proceso definidas en claude.md 
+Guarda el resultado en docs/auditoria/AA.md, no en el chat.
+Crea una tabla con una fila por regla y completa estas cinco columnas:
 
-El prompt va aquí dentro, entero y con sus saltos de línea,
-para que se sepa dónde empieza y dónde acaba.
+-Resumen de que pide la regla. Una sola frase, no mezcles reglas.
+-Qué se revisó para comprobarla. Indica el comando ejecutado o el archivo consultado, tenes que dejar evidencia de en qué se apoya tu veredicto.
+-Veredicto. Solo pueden ser tres opciones: se cumple, no se cumple ,  no se puede comprobar con la información disponible. Esta ultima opcion, usala cuando no conseguis suficiente evidencia.
+-Evidencia. Escríbela en una línea. Si la regla no se cumple, indica dónde se incumple. Si no se puede comprobar, explica qué información faltaria.
+- Qué harías con ella. Elige una de estas opciónes: dejarla, borrarla o convertirla en una comprobación automática.
+No modifiques nada del codigo ni intentes reparar nada, se trata de un informe de auditoria lo que te estoy pidiendo
 ```
 
-**Qué salió:** (opcional, una línea) funcionó a la primera / tuve que insistir / me inventó una ruta que no existe.
+**Qué salió:** (opcional, una línea) funcionó a la primera 
