@@ -22,14 +22,33 @@ Borra el ejemplo de abajo cuando escribas el primero.
 
 ## Prompt 1
 
-**Modelo:** Opus 1M xHigh
+**Modelo:** Sonnet 5.5
 **Herramienta:** Claude Code
 
 ```
-Este es el ejemplo. Bórralo.
-
-El prompt va aquí dentro, entero y con sus saltos de línea,
-para que se sepa dónde empieza y dónde acaba.
+Lista los últimos 15 commits del proyecto y una pequeña descripción de cada uno.
 ```
 
-**Qué salió:** (opcional, una línea) funcionó a la primera / tuve que insistir / me inventó una ruta que no existe.
+**Qué salió:** Funcionó. Listo los últimos commits y se indicó un resumen general de estos últimos cambios.
+
+## Prompt 2
+
+**Modelo:** Sonnet 5.5
+**Herramienta:** Claude Code
+
+```
+En base a los últimos 15 commits, verifica las reglas de procesos descritas en el archivo CLAUDE.md para verificar si se están cumpliendo. Al finalizar el analisis, genera una tabla con lo siguientes puntos como columnas:
+
+1. QUE PIDE LA REGLA: Resume en una frase, evita usar varias frases porque se podrían estar mezclando más de una regla.
+2. QUE SE REVISO PARA COMPROBAR: Indica el comando ejecutado o el archivo consultado. Esta información es la base del veredicto.
+3. VEREDICTO: Solo existen tres valores SE CUMPLE, NO SE CUMPLE ó NO SE PUEDE COMPROBAR CON LA INFORMACIÓN ACTUAL.
+4. EVIDENCIA: Que sea una sola linea. Si la regla no se cumple, indica donde se incumple. Sino se puede comprobar, indica que información falta.
+5. QUE SE HARÍA CON ELLA: Indica si se debe conservar, borrar o si es mejor convertirla en una comprobación automatica.
+
+Reglas a considerar:
+1. La tabla escribela en la ruta docs/auditoria/aup.md
+2. No se modifica código, solo es el analisis.
+
+```
+
+**Qué salió:** Genero la tabla pero algunas reglas las dividió para dar su explicación más a detalle sobre cada aspecto. Esto la IA lo incluyó como parte de notas al final del archivo (Se deja como evidencia).
