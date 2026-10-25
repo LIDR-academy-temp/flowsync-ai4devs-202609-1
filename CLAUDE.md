@@ -13,6 +13,10 @@ La rama `s1/start` es el punto de partida de los alumnos; `main` es la base del 
 
 ## Comandos
 
+### Atajos con Make (raíz, requiere bash: WSL en Windows)
+
+`make setup` (instala, crea `.env` + `APP_KEY`, migra) y `make start` (backend y frontend a la vez). Solo para uso interactivo; `make clean` borra `node_modules` y la BD SQLite.
+
 ### Backend (`cd backend`)
 
 ```bash
@@ -26,7 +30,7 @@ npm run format                                  # prettier --write
 npm run typecheck                               # tsc --noEmit
 ```
 
-Tests (Japa). Dos suites declaradas en `adonisrc.ts`: `unit` (`tests/unit/**/*.spec.ts`, timeout 2s) y `functional` (`tests/functional/**/*.spec.ts`, timeout 30s). Hoy solo hay tests **functional de `auth`** (`tests/functional/auth/`): registro, login, sesión e iniciales. **`tests/unit/` no existe**, y la capability `tasks` no tiene ni un test.
+Tests (Japa). Dos suites declaradas en `adonisrc.ts`: `unit` (`tests/unit/**/*.spec.ts`, timeout 2s) y `functional` (`tests/functional/**/*.spec.ts`, timeout 30s). Hoy solo hay tests **functional de `auth`** (`tests/functional/auth/`): registro, login, sesión e iniciales. **`tests/unit/` no existe**, y la capability `tasks` no tiene ni un test. (`AGENTS.md` solo contiene `CLAUDE.md`: apunta a este fichero.)
 
 ```bash
 node ace test unit                    # una suite
@@ -98,6 +102,23 @@ Rutas actuales (`start/routes.ts`), todas bajo `/api/v1`:
 | POST | `/api/v1/auth/login` | `AccessTokensController.store` | no |
 | GET | `/api/v1/account/profile` | `ProfileController.show` | sí |
 | POST | `/api/v1/account/logout` | `AccessTokensController.destroy` | sí |
+| GET | `/api/v1/tasks` | `TasksController.index` | sí |
+| POST | `/api/v1/tasks` | `TasksController.store` | sí |
+| GET | `/api/v1/tasks/:id` | `TasksController.show` | sí |
+| PATCH | `/api/v1/tasks/:id/status` | `TaskStatusesController.update` | sí |
+| PUT | `/api/v1/tasks/:id/due-date` | `TaskDueDatesController.update` | sí |
+
+### Tareas (dominio)
+
+Reglas de producto que viven en el backend y no se reimplementan en otra capa (están comentadas en `app/models/task.ts` y `app/controllers/tasks_controller.ts`):
+
+- Estados fijos: `pending`, `in_progress`, `done` (`TASK_STATUSES`). Sin filtro, `GET /tasks` **no** devuelve todas: excluye `done` (`DEFAULT_LIST_STATUSES`). La intención (comentarios del código) es que un estado inexistente en el filtro dé 422, pero hoy `listTasksValidator` es `vine.string().optional()` y `?status=foo` devuelve 200 con lista vacía.
+- «Vencida» solo se define en `Task.isOverdueOn(referenceDay)`. El spec exige tres condiciones (fecha, anterior `<` estricto al día de referencia, y estado distinto de `done`), pero el código solo implementa las dos primeras: una tarea `done` con fecha pasada devuelve `isOverdue: true`. El día lo aporta el cliente (`today`, `AAAA-MM-DD`) y lo exigen `GET /tasks/:id` y `PUT /tasks/:id/due-date`; el frontend no compara fechas para decidir el vencimiento.
+- La especificación vigente está en `openspec/specs/tasks/spec.md` y `openspec/specs/auth/spec.md`.
+
+## Flujo OpenSpec
+
+`openspec/` (esquema `spec-driven`) guarda las specs vigentes en `specs/` y los cambios cerrados en `changes/archive/`. Los cambios de comportamiento van por las skills `opsx:propose` → `opsx:apply` → `opsx:verify` → `opsx:archive` (`.claude/commands/opsx/`, `.claude/skills/openspec-*`).
 
 ### Validación
 
@@ -127,7 +148,8 @@ Organización de `src/`:
 La URL de la API sale de `VITE_API_URL` (ver `frontend/.env.example`); por defecto `http://localhost:3333`.
 
 ## Reglas de proceso
-- Antes de tocar código: crear una rama nueva (`git checkout -b feat/<slug>`). Nunca commitear directo en `main`/`s1/start`.
-- Al cerrar la tarea: usar la skill `/commit`, luego `gh pr create` con una descripción completa de los cambios en el cuerpo del PR.
-- Después de abrir el PR: usar el subagente `adversarial-reviewer` sobre él, antes de darlo por terminado.
+- La rama es por unidad de trabajo, no por petición. Antes de tocar código: si ya estás en una rama de trabajo que no sea `main` ni una `sN/*`, sigue en ella; si no, crea una nueva (`git checkout -b feat/<slug>`). Nunca commitear directo en `main`/`s1/start`.
+- El commit es por petición: al cerrar cada petición, usar la skill `/commit`.
+- Al terminar la unidad de trabajo (una sola vez, no al cerrar cada petición): `gh pr create` con una descripción completa de los cambios en el cuerpo del PR.
+- Después de abrir el PR (también una sola vez): usar el subagente `adversarial-reviewer` sobre él, antes de darlo por terminado.
 - No repitas ese resumen en el chat: la sesión se va a perder, el PR no. Responde solo con la URL del PR.
