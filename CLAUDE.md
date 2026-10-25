@@ -112,8 +112,8 @@ Rutas actuales (`start/routes.ts`), todas bajo `/api/v1`:
 
 Reglas de producto que viven en el backend y no se reimplementan en otra capa (están comentadas en `app/models/task.ts` y `app/controllers/tasks_controller.ts`):
 
-- Estados fijos: `pending`, `in_progress`, `done` (`TASK_STATUSES`). Sin filtro, `GET /tasks` **no** devuelve todas: excluye `done` (`DEFAULT_LIST_STATUSES`). Un estado inexistente en el filtro da 422, no lista vacía.
-- «Vencida» solo se define en `Task.isOverdueOn(referenceDay)`: fecha anterior (`<` estricto) al día de referencia y tarea no hecha. El día lo aporta el cliente (`today`, `AAAA-MM-DD`) y solo `GET /tasks/:id` lo exige; el frontend nunca compara fechas.
+- Estados fijos: `pending`, `in_progress`, `done` (`TASK_STATUSES`). Sin filtro, `GET /tasks` **no** devuelve todas: excluye `done` (`DEFAULT_LIST_STATUSES`). La intención (comentarios del código) es que un estado inexistente en el filtro dé 422, pero hoy `listTasksValidator` es `vine.string().optional()` y `?status=foo` devuelve 200 con lista vacía.
+- «Vencida» solo se define en `Task.isOverdueOn(referenceDay)`. El spec exige tres condiciones (fecha, anterior `<` estricto al día de referencia, y estado distinto de `done`), pero el código solo implementa las dos primeras: una tarea `done` con fecha pasada devuelve `isOverdue: true`. El día lo aporta el cliente (`today`, `AAAA-MM-DD`) y lo exigen `GET /tasks/:id` y `PUT /tasks/:id/due-date`; el frontend no compara fechas para decidir el vencimiento.
 - La especificación vigente está en `openspec/specs/tasks/spec.md` y `openspec/specs/auth/spec.md`.
 
 ## Flujo OpenSpec
