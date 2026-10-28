@@ -16,20 +16,53 @@ distinto, y sin este archivo no se distinguen.
 - Incluye también los que **no funcionaron**. Suelen ser los más útiles de leer.
 - `Modelo` y `Herramienta` en todos. Si cambiaste de una a otra a mitad, se nota aquí.
 
-Borra el ejemplo de abajo cuando escribas el primero.
-
 ---
 
 ## Prompt 1
 
-**Modelo:** Opus 1M xHigh
-**Herramienta:** Claude Code
+**Modelo:** Claude 3.5 Sonnet
+**Herramienta:** GitHub Copilot (Eclipse - Chat)
 
 ```
-Este es el ejemplo. Bórralo.
-
-El prompt va aquí dentro, entero y con sus saltos de línea,
-para que se sepa dónde empieza y dónde acaba.
+Revisa el archivo de instrucciones del agente en el proyecto (.github/copilot-instructions.md) y lista las reglas de proceso definidas para el flujo de trabajo. No ejecutes ningun comando ni cambies archivos.
 ```
 
-**Qué salió:** (opcional, una línea) funcionó a la primera / tuve que insistir / me inventó una ruta que no existe.
+**Qué salió:** Funcionó a la primera; extrajo la lista de reglas de proceso definidas para el proyecto.
+
+---
+
+## Prompt 2
+
+**Modelo:** Claude 3.5 Sonnet
+**Herramienta:** GitHub Copilot (Eclipse - Chat)
+
+```
+Audita exclusivamente las reglas de proceso definidas contrastándolas con los últimos 15 commits del repositorio (git log -n 15) y el estado actual de los archivos.
+
+NO modifiques ningún archivo ni intentes corregir nada de lo que encuentres.
+
+Muestra en el chat la tabla con las 5 columnas:
+1. Qué pide la regla
+2. Qué se revisó
+3. Veredicto (se cumple / no se cumple / no se puede comprobar)
+4. Evidencia en una línea
+5. Qué harías con ella (dejarla / borrarla / convertirla en comprobación automática)
+```
+
+**Qué salió:** Tuve que insistir porque intentó ejecutar comandos para corregir archivos; en el segundo intento entregó la tabla de auditoría sin alterar código.
+
+---
+
+## Prompt 3
+
+**Modelo:** Claude 3.5 Sonnet
+**Herramienta:** GitHub Copilot (Eclipse - Chat)
+
+```
+Con base en la auditoria anterior de los ultimos 15 commits, ayudame a redactar las 3 lineas finales para la Parte B:
+1. La regla en la que mas me equivoque al comparar mi expectativa con el resultado.
+2. Una regla que no se puede comprobar con la informacion disponible y que tendria que cambiar.
+3. La regla que eliminaria y por que.
+```
+
+**Qué salió:** Funcionó a la primera; generó los argumentos para la reflexión de la Parte B respetando el formato solicitado.
