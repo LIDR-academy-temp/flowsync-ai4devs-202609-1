@@ -22,14 +22,20 @@ Borra el ejemplo de abajo cuando escribas el primero.
 
 ## Prompt 1
 
-**Modelo:** Opus 1M xHigh
+**Modelo:** Opus 5.5
 **Herramienta:** Claude Code
 
 ```
-Este es el ejemplo. Bórralo.
-
-El prompt va aquí dentro, entero y con sus saltos de línea,
-para que se sepa dónde empieza y dónde acaba.
+Lee las reglas de proceso de `CLAUDE.md` y contrástalas contra los últimos 15 commits de este repositorio y el estado actual del árbol. Para cada regla, una fila y completa estas cinco columnas:
+1. **Qué pide la regla**. Resúmela en una frase. Si necesitas varias frases, puede que estés mezclando más de una regla.
+2. **Qué se revisó para comprobarla**. Indica el comando ejecutado o el archivo consultado. Sin esta información no hay forma de saber en qué se apoya el veredicto.
+3. **Veredicto**. Solo puede ser _se cumple_, _no se cumple_ o _no se puede comprobar con la información disponible_. Este último caso también es un resultado válido. Significa que la regla no deja suficiente evidencia para verificarla.
+4. **Evidencia**. Escríbela en una línea. Si la regla no se cumple, indica dónde se incumple. Si no se puede comprobar, explica qué información falta.
+5. **Qué harías con ella**. Elige una opción: _dejarla_, _borrarla_ o _convertirla en una comprobación automática_.
+Usa solo lo que puedas verificar con comandos de git y leyendo archivos: si una regla no deja rastro comprobable, dilo en vez de suponer. No cambies ningún archivo: esto es una auditoría, no un arreglo. Solo escribe la tabla solicitada en `docs/auditoria/<tus-iniciales>.md`
+No realices commit o PR alguno.
 ```
 
-**Qué salió:** (opcional, una línea) funcionó a la primera / tuve que insistir / me inventó una ruta que no existe.
+**Qué salió:** 
+
+---
