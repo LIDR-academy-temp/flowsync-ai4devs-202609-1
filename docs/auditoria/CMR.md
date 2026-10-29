@@ -16,8 +16,13 @@
 # Parte B: las 3 lineas
 
 1. La regla en la que más te equivocaste. Compara tu expectativa inicial con el veredicto final y elige la que más se alejó de lo que pensabas. Si acertaste todas, indícalo y explica en una frase en qué te apoyaste para acertar. Si solo era una impresión, también conviene dejarlo por escrito.
-	Rta: La #1 y la #3. Las acciones sobre el repositorio realizadas por fuera del IDE (por CLI) pueden llevar a cabo acciones que rompen las reglas dejadas en el harness.
+	
+   Rta: La #1 y la #3. Las acciones sobre el repositorio realizadas por fuera del IDE (por CLI) pueden llevar a cabo acciones que rompen las reglas dejadas en el harness.
+
 2. Una regla que no se puede comprobar con la información disponible. Explica en una frase qué tendría que cambiar para poder verificarla. Puede ser reformularla, convertirla en una comprobación automática o aceptar que no deja una evidencia clara.
+
 	Rta: La #4. Se podría reformular la skill para que deje una marca en el commit y detectar que el mismo fue realizado por este. 
+
 3. La regla que eliminarías y por qué. Hay dos casos habituales: una regla que ya garantiza otra herramienta o una que nadie sigue y que tampoco aporta valor. Elige una y explica a cuál de los dos casos pertenece.	
-	Rta: la #8. No aporta valor.	
+
+	Rta: La #8. No aporta valor.	
