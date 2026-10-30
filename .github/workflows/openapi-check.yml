@@ -1,0 +1,51 @@
+name: OpenAPI
+
+# Falla si `docs/api/openapi.json` no coincide con el documento que generan
+# las rutas y controladores del backend. Solo compara: no regenera ni commitea.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Sin permisos por defecto; el job pide solo leer el repositorio.
+permissions: {}
+
+jobs:
+  check:
+    name: openapi:check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+
+    defaults:
+      run:
+        working-directory: backend
+
+    # `start/env.ts` valida estas variables al arrancar la app, y en CI no hay
+    # `.env`. Generar el documento no cifra ni firma nada, así que APP_KEY es
+    # un valor de relleno, no un secreto.
+    env:
+      NODE_ENV: development
+      TZ: UTC
+      PORT: '3333'
+      HOST: localhost
+      LOG_LEVEL: warn
+      APP_KEY: ci-openapi-check-placeholder-key
+      APP_URL: http://localhost:3333
+      SESSION_DRIVER: memory
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - run: npm ci
+
+      - run: npm run openapi:check
