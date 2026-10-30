@@ -12,6 +12,10 @@ publicar. El prompt le prohíbe redirigir salida a ficheros, porque algo como
 `gh pr diff > /tmp/x` no encaja con ninguna herramienta permitida y cada denegación le cuesta un
 turno.
 
+Lo primero que hace el revisor es leer [`REVIEW.md`](../REVIEW.md), el archivo de calibración. Ahí
+está qué cuenta como grave, el tope de sugerencias, dónde no reportar y qué evidencia se le exige.
+Para ajustar el revisor se edita ese archivo, no el prompt del workflow.
+
 ## Pasos manuales pendientes
 
 Mientras no se hagan, el workflow existe pero no revisa nada.
@@ -26,11 +30,7 @@ Mientras no se hagan, el workflow existe pero no revisa nada.
    En una cuenta personal basta con declararlo. Si el repositorio pertenece a una organización que
    limita el token a solo lectura (*Settings → Actions → General → Workflow permissions*), ese
    permiso se ignora y los comentarios fallan.
-4. **Escribir el archivo de calibración, `REVIEW.md`, en la raíz.** El prompt le dice al revisor
-   que lo lea antes que nada. Ahí va qué cuenta como grave y cuántas sugerencias menores caben antes
-   de que el ruido se coma la señal. Hasta que exista, el revisor lo dice en su resumen y se limita
-   a defectos de corrección y seguridad.
-5. **Abrir un PR de prueba y leer la primera ejecución.** Es la única forma de ver que credencial,
+4. **Abrir un PR de prueba y leer la primera ejecución.** Es la única forma de ver que credencial,
    permisos y comentarios funcionan juntos. Quien abre el PR necesita permiso de escritura en el
    repositorio: la acción se niega a ejecutarse para usuarios sin él.
 
