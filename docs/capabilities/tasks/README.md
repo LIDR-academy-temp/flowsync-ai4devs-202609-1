@@ -70,8 +70,21 @@ Las formas que se repiten viven en
 transformers: así el documento **no puede** enseñar el vencimiento en la lista.
 
 Ese fichero es documentación, no validación: describe lo que los controladores ya hacen. Si cambia un
-transformer o un validador, se actualiza en el mismo commit. El documento se construye en cada
-petición y no hay fichero que generar; lo que se commitea es el diff de `.adonisjs/`.
+transformer o un validador, se actualiza en el mismo commit.
+
+El documento también existe como fichero versionado, [`docs/api/openapi.json`](../../api/openapi.json),
+para que el contrato se pueda leer y revisar en el repositorio sin arrancar el servidor. Se maneja
+desde `backend/` con dos scripts:
+
+```bash
+npm run openapi:generate   # reescribe docs/api/openapi.json a partir del código
+npm run openapi:check      # solo compara; sale con código 1 y explica la diferencia si no coincide
+```
+
+Si cambia el contrato, se ejecuta `openapi:generate` y el fichero regenerado se commitea junto con
+el cambio, además del diff de `.adonisjs/`. El fichero sale del documento que construye el código
+una sola vez, así que puede diferir del que sirve un servidor de desarrollo que lleve rato
+atendiendo peticiones: ese acumula parámetros de ruta repetidos.
 
 ## Reglas de negocio: dónde vive cada una
 
@@ -194,6 +207,6 @@ La lista está en `/tasks`, una tarea en `/tasks/:id`, y el filtro viaja en la U
 ### Antes de dar algo por terminado
 
 ```bash
-cd backend  && npm run lint && npm run typecheck && node ace test
+cd backend  && npm run lint && npm run typecheck && node ace test && npm run openapi:check
 cd frontend && npm run lint && npm run build     # el typecheck del front vive en build
 ```
