@@ -50,11 +50,20 @@ function describeDifferences(versioned: string, generated: string) {
 
     const left = before as Record<string, unknown>
     const right = after as Record<string, unknown>
+    const reported = lines.length
     for (const key of new Set([...Object.keys(left), ...Object.keys(right)])) {
       const child = Array.isArray(before) ? `${path}[${key}]` : `${path}.${key}`
       if (!(key in left)) lines.push(`+ ${child}`)
       else if (!(key in right)) lines.push(`- ${child}`)
       else walk(left[key], right[key], child)
+    }
+
+    // Mismas claves y mismos valores, pero en otro orden: la comparación de
+    // texto lo distingue y, sin esta línea, el aviso saldría sin ninguna causa.
+    if (!Array.isArray(before) && lines.length === reported) {
+      lines.push(
+        `≈ ${path || '(raíz)'}: cambia el orden de las claves (${Object.keys(left)} -> ${Object.keys(right)})`
+      )
     }
   }
 
@@ -87,7 +96,11 @@ export async function checkDocument(app: ApplicationService) {
 
   let versioned: string
   try {
-    versioned = await readFile(versionedPath, 'utf8')
+    // Un clon con `core.autocrlf` entrega el fichero con CRLF; el documento
+    // generado siempre lleva LF, y sin normalizar la comprobación fallaría sin
+    // que el contrato haya cambiado.
+    const raw = await readFile(versionedPath, 'utf8')
+    versioned = raw.replaceAll('\r\n', '\n')
   } catch {
     console.error(`No existe ${versionedPath}. Ejecuta: npm run openapi:generate`)
     return 1
@@ -104,8 +117,21 @@ export async function checkDocument(app: ApplicationService) {
       return 0
     }
 
+    let differences: string[]
+    try {
+      differences = describeDifferences(versioned, generated)
+    } catch {
+      console.error('docs/api/openapi.json no es JSON válido, así que no se puede comparar.')
+      console.error('Regenera el fichero: npm run openapi:generate')
+      return 1
+    }
+    // Si el contenido es el mismo y aun así el texto difiere, solo cambia el formato.
+    if (differences.length === 0) {
+      differences.push('~ solo cambia el formato (espacios, indentación o saltos de línea)')
+    }
+
     console.error('docs/api/openapi.json no coincide con el documento que genera el código:')
-    for (const line of describeDifferences(versioned, generated)) {
+    for (const line of differences) {
       console.error(`  ${line}`)
     }
     console.error('Si el cambio es intencionado, regenera el fichero: npm run openapi:generate')
