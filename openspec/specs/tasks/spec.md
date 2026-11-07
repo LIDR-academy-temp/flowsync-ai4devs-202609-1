@@ -156,25 +156,6 @@ El sistema SHALL cambiar el estado de una tarea al recibir `PATCH /api/v1/tasks/
 - **WHEN** se intenta cambiar el estado de una tarea que no existe
 - **THEN** la respuesta es `404`
 
-### Requirement: Borrado de cualquier tarea
-
-El sistema SHALL borrar de forma definitiva una tarea al recibir `DELETE /api/v1/tasks/:id`, SHALL responder `204` sin cuerpo, y SHALL permitirlo a cualquier cuenta con sesión, sea o no la responsable de esa tarea.
-
-#### Scenario: Borrado correcto
-
-- **WHEN** se envía `DELETE /api/v1/tasks/:id` sobre una tarea existente
-- **THEN** la respuesta es `204` sin cuerpo y la tarea deja de existir: ni la lista ni la consulta de la tarea suelta la devuelven
-
-#### Scenario: Borrar una tarea de otra persona
-
-- **WHEN** una cuenta borra una tarea cuyo responsable es otra
-- **THEN** el borrado se aplica igual que en una tarea propia, sin exigir ningún permiso adicional
-
-#### Scenario: La tarea no existe
-
-- **WHEN** se envía `DELETE /api/v1/tasks/:id` con un identificador que no corresponde a ninguna tarea
-- **THEN** la respuesta es `404` y no se borra nada
-
 ### Requirement: Las tareas exigen sesión
 
 El sistema SHALL exigir un token de acceso válido para listar, crear y cambiar el estado de tareas, respondiendo `401` cuando falte o no sea válido, sin devolver ninguna tarea ni ejecutar la operación.
