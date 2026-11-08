@@ -42,5 +42,5 @@ Entre un intento y el siguiente, el proyecto se dejó como estaba (`git checkout
 ## Parte B: las tres líneas
 
 1. **Apuesta y resultado.** Aposté 5 de 5 y salió 5 de 5, en las cinco ejecuciones completas: la regla se cumplió el 100 % de las veces.
-2. **Qué haría con ese número.** La regla se ha cumplido el 100 % de las veces, pero eso no dice si hace falta. Antes de decidir si la dejo o la borro, falta saber qué pasa si la elimino.
+2. **Qué haría con ese número.** La regla se ha cumplido el 100 % de las veces, pero eso no garantiza que se cumpla siempre puesto que solo se verificó en 5 ejecuciones. De todas formas lo primero que haría es decidir si la dejo o la borro, falta saber qué pasa si la elimino.
 3. **Algo que mi medición no está midiendo.** No mide si el README seguiría al día sin la regla, porque no hay línea base sin ella. Y con solo 5 sesiones no se puede garantizar que se cumpla el 100 % de las veces en más ejecuciones.
