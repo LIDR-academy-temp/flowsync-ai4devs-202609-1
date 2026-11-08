@@ -33,3 +33,14 @@ para que se sepa dónde empieza y dónde acaba.
 ```
 
 **Qué salió:** (opcional, una línea) funcionó a la primera / tuve que insistir / me inventó una ruta que no existe.
+
+## Prompt 2
+
+**Modelo:** Opus 5.5
+**Herramienta:** Claude Code
+
+```
+Genera el fichero docs/evals/LF.md a partir del fichero ../Sesión\ 8\ -\ Mis\ anotaciones/evals\ prompts.txt
+```
+
+**Qué salió:** generó docs/evals/LF.md con la parte A (encargo, apuesta, tabla de 5 intentos) y la parte B a partir de mis notas.
