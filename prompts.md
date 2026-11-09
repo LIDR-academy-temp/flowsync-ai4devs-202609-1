@@ -16,20 +16,22 @@ distinto, y sin este archivo no se distinguen.
 - Incluye también los que **no funcionaron**. Suelen ser los más útiles de leer.
 - `Modelo` y `Herramienta` en todos. Si cambiaste de una a otra a mitad, se nota aquí.
 
-Borra el ejemplo de abajo cuando escribas el primero.
-
 ---
 
 ## Prompt 1
 
-**Modelo:** Opus 1M xHigh
+**Modelo:** Opus 5.5 (claude-opus-5-5), effort xhigh
 **Herramienta:** Claude Code
 
 ```
-Este es el ejemplo. Bórralo.
-
-El prompt va aquí dentro, entero y con sus saltos de línea,
-para que se sepa dónde empieza y dónde acaba.
+Lee los scenarios del requirement "Lo que cada tarea muestra de su responsable" en `openspec/specs/tasks/spec.md` y los tests que haya en `backend/tests/` para generar una matriz de trazabilidad en `docs/verificacion/SGCA.md` con los siguiente puntos: cada scenario en una línea (Qué se espera y en qué situación) → qué prueba lo cubre (nombrada tal cual aparece en la suite de tests) → Cubierto/NO cubierto/No lo sé → Si pusiste "No lo sé", qué te faltó para decidirlo (resumido en media línea). Cuenta cuántos scenarios tiene el requirement y cuántos están cubiertos y ponlo arriba. No hagas NADA más y menos tocar código
 ```
 
-**Qué salió:** (opcional, una línea) funcionó a la primera / tuve que insistir / me inventó una ruta que no existe.
+## Prompt 2
+
+**Modelo:** Opus 5.5 (claude-opus-5-5), effort xhigh
+**Herramienta:** Claude Code
+
+```
+Escribe los tests de integración para los scenarios del requirement «Lo que cada tarea muestra de su responsable» de `openspec/specs/tasks/spec.md` que quedaron como «NO cubierto» en la matriz de trazabilidad: uno por cada scenario, en `backend/tests/functional/tasks/` siguiendo el estilo de los que ya existen en `backend/tests/functional/auth/`. No toques nada fuera de `backend/tests/` y del archivo prompts.md. Después de escribirlos ejecutalos y si algún test falla, no arregles el código y déjalo fallando, y no aflojes el test para que pase. Si algo se pone rojo, se queda rojo y se entrega rojo: quiero saber qué está mal para verificarlo sin taparlo.
+```
