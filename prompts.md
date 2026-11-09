@@ -1,35 +1,154 @@
-# Prompts
+# Prompts — Laboratorio 8: Evals for Agentic Harness
 
-Aquí van **todos los prompts que lanzaste** para hacer el ejercicio, en el orden en que los
-lanzaste, con el modelo y la herramienta de cada uno.
+## Contexto del experimento
 
-Esto no es papeleo. Lo que se revisa es **cómo pediste las cosas**, no solo lo que salió: un
-resultado flojo con un prompt bueno y un resultado flojo con un prompt vago necesitan feedback
-distinto, y sin este archivo no se distinguen.
+- **Curso:** LIDR AI4Devs — Módulo 8.
+- **Herramienta:** Claude Code v2.1.318.
+- **Modelo:** Opus 5.5.
+- **Esfuerzo:** Medium.
+- **Permisos:** Auto mode.
+- **Repositorio:** FlowSync AI4Devs.
+- **Rama inicial:** `s8/start`.
+- **Commit inicial:** `a883bd1749b4a8411735a1a34ec483bff60591e3`.
+- **Fecha:** 9 de noviembre de 2026.
 
-## Cómo rellenarlo
+Se registran los seis envíos reales del mismo prompt, en orden cronológico.
 
-- Un apartado `## Prompt N` por cada prompt.
-- **Pega el prompt tal cual lo lanzaste**, dentro del bloque de código, aunque ocupe diez líneas
-  y aunque tenga faltas. No lo reescribas para que quede bien: el que arreglaste mentalmente
-  después no es el que lanzaste.
-- Incluye también los que **no funcionaron**. Suelen ser los más útiles de leer.
-- `Modelo` y `Herramienta` en todos. Si cambiaste de una a otra a mitad, se nota aquí.
+El primero no fue evaluable por un problema de autenticación.
+Los cinco siguientes corresponden a los cinco ensayos válidos.
 
-Borra el ejemplo de abajo cuando escribas el primero.
+La incidencia inicial no se incluye en el denominador de la medición.
 
 ---
 
-## Prompt 1
+## Prompt 1 — Intento no evaluable
 
-**Modelo:** Opus 1M xHigh
-**Herramienta:** Claude Code
+**Modelo:** Opus 5.5
+**Herramienta:** Claude Code v2.1.318
 
-```
-Este es el ejemplo. Bórralo.
-
-El prompt va aquí dentro, entero y con sus saltos de línea,
-para que se sepa dónde empieza y dónde acaba.
+```text
+Añade a la capability tasks el endpoint DELETE /api/v1/tasks/:id, que borra una tarea y devuelve 204 sin cuerpo. Impleméntalo en el controlador que ya existe y declara su ruta junto a las demás de tasks.
 ```
 
-**Qué salió:** (opcional, una línea) funcionó a la primera / tuve que insistir / me inventó una ruta que no existe.
+**Qué salió:** Claude Code respondió:
+
+```text
+Login reached its time limit · Please run /login
+```
+
+No ejecutó el encargo. Se resolvió la autenticación mediante `/login`.
+
+**Clasificación:** incidencia de autenticación; intento no evaluable.
+
+---
+
+## Prompt 2 — Ensayo válido 1
+
+**Modelo:** Opus 5.5
+**Herramienta:** Claude Code v2.1.318
+
+```text
+Añade a la capability tasks el endpoint DELETE /api/v1/tasks/:id, que borra una tarea y devuelve 204 sin cuerpo. Impleméntalo en el controlador que ya existe y declara su ruta junto a las demás de tasks.
+```
+
+**Qué salió:** Implementó DELETE y actualizó el README.
+
+- Control DELETE: aprobado.
+- README: actualizado.
+- Rama: `feat/delete-task`.
+- Commit: `08d137f`.
+- Resultado: cumple.
+
+---
+
+## Prompt 3 — Ensayo válido 2
+
+**Modelo:** Opus 5.5
+**Herramienta:** Claude Code v2.1.318
+
+```text
+Añade a la capability tasks el endpoint DELETE /api/v1/tasks/:id, que borra una tarea y devuelve 204 sin cuerpo. Impleméntalo en el controlador que ya existe y declara su ruta junto a las demás de tasks.
+```
+
+**Qué salió:** Implementó DELETE y actualizó el README.
+
+- Control DELETE: aprobado.
+- README: actualizado.
+- Rama: `feat/tasks-delete`.
+- Commit: `81d80e2`.
+- Resultado: cumple.
+
+---
+
+## Prompt 4 — Ensayo válido 3
+
+**Modelo:** Opus 5.5
+**Herramienta:** Claude Code v2.1.318
+
+```text
+Añade a la capability tasks el endpoint DELETE /api/v1/tasks/:id, que borra una tarea y devuelve 204 sin cuerpo. Impleméntalo en el controlador que ya existe y declara su ruta junto a las demás de tasks.
+```
+
+**Qué salió:** Implementó DELETE y actualizó el README.
+
+- Control DELETE: aprobado.
+- README: actualizado.
+- Rama: `feat/tasks-delete-endpoint`.
+- Commit: `abacfe2`.
+- Resultado: cumple.
+
+---
+
+## Prompt 5 — Ensayo válido 4
+
+**Modelo:** Opus 5.5
+**Herramienta:** Claude Code v2.1.318
+
+```text
+Añade a la capability tasks el endpoint DELETE /api/v1/tasks/:id, que borra una tarea y devuelve 204 sin cuerpo. Impleméntalo en el controlador que ya existe y declara su ruta junto a las demás de tasks.
+```
+
+**Qué salió:** Implementó DELETE y actualizó el README.
+
+- Control DELETE: aprobado.
+- README: actualizado.
+- Rama: `feat/tasks-destroy`.
+- Commit: `e6480cb`.
+- Resultado: cumple.
+
+---
+
+## Prompt 6 — Ensayo válido 5
+
+**Modelo:** Opus 5.5
+**Herramienta:** Claude Code v2.1.318
+
+```text
+Añade a la capability tasks el endpoint DELETE /api/v1/tasks/:id, que borra una tarea y devuelve 204 sin cuerpo. Impleméntalo en el controlador que ya existe y declara su ruta junto a las demás de tasks.
+```
+
+**Qué salió:** Implementó DELETE y actualizó el README.
+
+- Control DELETE: aprobado.
+- README: actualizado.
+- Rama: `feat/tasks-delete-by-id`.
+- Commit: `6bf8dd5`.
+- Resultado: cumple.
+
+---
+
+## Resumen de trazabilidad
+
+| Ensayo válido | Control DELETE | README actualizado | Resultado |
+|---|---|---|---|
+| 1 | Sí | Sí | Cumple |
+| 2 | Sí | Sí | Cumple |
+| 3 | Sí | Sí | Cumple |
+| 4 | Sí | Sí | Cumple |
+| 5 | Sí | Sí | Cumple |
+
+**Predicción inicial:** 3 de 5 (60 %).
+
+**Resultado observado:** 5 de 5 (100 %).
+
+**Importante:** la medición describe el cumplimiento observado durante los cinco ensayos. No demuestra por sí sola que la regla de `CLAUDE.md` haya causado ese resultado.
