@@ -20,16 +20,18 @@ Borra el ejemplo de abajo cuando escribas el primero.
 
 ---
 
-## Prompt 1
+## Prompt 1 — el encargo (lanzado 5 veces)
 
-**Modelo:** Opus 1M xHigh
+**Modelo:** Claude Opus 5.5 (`claude-opus-5-5`)
 **Herramienta:** Claude Code
 
-```
-Este es el ejemplo. Bórralo.
+Se lanzó **tal cual, cinco veces**, cada una en una sesión nueva que arrancaba de `s8/start` limpio y
+sin recordar la regla medida. Los intentos son las ramas `feat/delete-task`, `feat/tasks-delete`,
+`feat/tasks-delete-endpoint`, `feat/tasks-destroy` y `feat/delete-task-endpoint`.
 
-El prompt va aquí dentro, entero y con sus saltos de línea,
-para que se sepa dónde empieza y dónde acaba.
+```
+Añade a la capability tasks el endpoint DELETE /api/v1/tasks/:id, que borra una tarea y devuelve 204 sin cuerpo. Impleméntalo en el controlador que ya existe y declara su ruta junto a las demás de tasks.
 ```
 
-**Qué salió:** (opcional, una línea) funcionó a la primera / tuve que insistir / me inventó una ruta que no existe.
+**Qué salió:** en los 5 intentos quedó declarada la ruta y el README de `tasks` se puso al día (5/5).
+`docs/api/openapi.json` solo se regeneró en 3 de 5.
