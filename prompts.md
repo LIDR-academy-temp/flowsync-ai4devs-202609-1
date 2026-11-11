@@ -16,20 +16,67 @@ distinto, y sin este archivo no se distinguen.
 - Incluye también los que **no funcionaron**. Suelen ser los más útiles de leer.
 - `Modelo` y `Herramienta` en todos. Si cambiaste de una a otra a mitad, se nota aquí.
 
-Borra el ejemplo de abajo cuando escribas el primero.
+---
+
+## Prompt 1 (Intento 1)
+
+**Modelo:** Claude 5.5 Sonnet
+**Herramienta:** GitHub Copilot (Eclipse - Chat)
+
+```text
+Añade el endpoint DELETE /api/v1/tasks/:id en la capability tasks (en su ruta y su controlador). No ejecutes comandos de terminal ni scripts.
+```
+
+**Qué salió:** Creó la ruta DELETE, implementó el controlador con decoradores OpenAPI y actualizó el archivo `docs/capabilities/tasks/README.md`.
 
 ---
 
-## Prompt 1
+## Prompt 2 (Intento 2)
 
-**Modelo:** Opus 1M xHigh
-**Herramienta:** Claude Code
+**Modelo:** Claude 5.5 Sonnet
+**Herramienta:** GitHub Copilot (Eclipse - Chat)
 
-```
-Este es el ejemplo. Bórralo.
-
-El prompt va aquí dentro, entero y con sus saltos de línea,
-para que se sepa dónde empieza y dónde acaba.
+```text
+Añade el endpoint DELETE /api/v1/tasks/:id en la capability tasks (en su ruta y su controlador). No ejecutes comandos de terminal ni scripts.
 ```
 
-**Qué salió:** (opcional, una línea) funcionó a la primera / tuve que insistir / me inventó una ruta que no existe.
+**Qué salió:** Declaró la ruta DELETE, implementó el controlador y actualizó la tabla y textos en el `README.md` de tasks.
+
+---
+
+## Prompt 3 (Intento 3)
+
+**Modelo:** Claude 5.5 Sonnet
+**Herramienta:** GitHub Copilot (Eclipse - Chat)
+
+```text
+Añade el endpoint DELETE /api/v1/tasks/:id en la capability tasks (en su ruta y su controlador). No ejecutes comandos de terminal ni scripts.
+```
+
+**Qué salió:** Implementó la ruta y el controlador correctamente, pero omitió expresamente la actualización del `README.md`, indicando que solo se le había solicitado ruta y controlador.
+
+---
+
+## Prompt 4 (Intento 4)
+
+**Modelo:** Claude 5.5 Sonnet
+**Herramienta:** GitHub Copilot (Eclipse - Chat)
+
+```text
+Añade el endpoint DELETE /api/v1/tasks/:id en la capability tasks (en su ruta y su controlador). No ejecutes comandos de terminal ni scripts.
+```
+
+**Qué salió:** Creó la ruta DELETE, implementó el método destroy en el controlador y añadió la fila del endpoint al `README.md` de tasks.
+
+---
+
+## Prompt 5 (Intento 5)
+
+**Modelo:** Claude 5.5 Sonnet
+**Herramienta:** GitHub Copilot (Eclipse - Chat)
+
+```text
+Añade el endpoint DELETE /api/v1/tasks/:id en la capability tasks (en su ruta y su controlador). No ejecutes comandos de terminal ni scripts.
+```
+
+**Qué salió:** Declaró la ruta, implementó el controlador con decoradores OpenAPI y actualizó el `README.md` de la capability tasks.
