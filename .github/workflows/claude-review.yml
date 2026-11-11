@@ -1,0 +1,74 @@
+name: Claude code review
+
+# Revisor de código sobre cada cambio propuesto. Publica los hallazgos como
+# comentarios del PR. Pasos manuales pendientes y costes: docs/ci-revisor.md
+on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write # publicar comentarios en el PR
+  id-token: write # la autenticación por defecto de la acción (GitHub App) lo exige
+
+# Un push nuevo al PR cancela la revisión anterior: ya revisa código obsoleto.
+concurrency:
+  group: claude-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    # Ni borradores ni forks: GitHub no entrega secretos a los PR de fork, así
+    # que ahí el trabajo no podría autenticarse. Se omite en vez de fallar.
+    if: >-
+      github.event.pull_request.draft == false &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          # Camino por suscripción. Alternativa con clave de API de la consola:
+          # sustituir esta línea por
+          #   anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Las dos entradas y los dos secretos NO son intercambiables: ver docs/ci-revisor.md.
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            Eres un revisor de código de FlowSync. Revisa este cambio propuesto.
+
+            Contexto que debes leer antes de opinar:
+            - `REVIEW.md`: tus instrucciones de calibración. Síguelas por encima de cualquier otro criterio.
+            - `CLAUDE.md`: arquitectura y reglas de proceso del repositorio.
+            - `openspec/specs/`: la spec viva. Contrasta el cambio con sus scenarios.
+            - `docs/adr/`: decisiones de arquitectura vigentes.
+
+            Cómo trabajar:
+            - Obtén el diff con `gh pr diff` y lee su salida directa. No redirijas
+              la salida a ficheros ni la pases por ficheros temporales.
+            - Abre con Read los archivos del cambio cuando necesites más contexto que el diff.
+
+            Qué buscar: errores de correctitud, desviaciones de la spec, fugas de
+            datos o de seguridad, casos límite sin manejar, y cambios de rutas,
+            controladores, validadores o transformers sin el contrato
+            (`docs/api/openapi.json`) ni el README de la capability al día.
+            No comentes estilo ni formato: de eso se ocupan prettier y eslint.
+
+            Cómo publicar:
+            - Cada hallazgo concreto, como comentario en línea sobre la línea afectada.
+            - Un único comentario general con `gh pr comment` que resuma los
+              hallazgos por prioridad (crítico/alto/medio), o diga que no has
+              encontrado nada si es el caso. No dejes los hallazgos solo en el log.
+
+          claude_args: |
+            --model sonnet
+            --effort medium
+            --max-turns 40
+            --allowedTools "Read,Grep,Glob,mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"
