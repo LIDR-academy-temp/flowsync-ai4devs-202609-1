@@ -21,8 +21,7 @@ El workflow **no funciona todavía**: faltan los pasos de abajo, que no se puede
      acción, que solo reenvía `claude_args`);
    - que el alias `--model sonnet` se resuelve (los ejemplos oficiales usan nombres completos);
    - que `pull-requests: write` basta para comentar (los ejemplos oficiales no coinciden entre sí).
-5. **Pendiente de tu parte: el archivo de calibración.** No existe ninguno en el repositorio, así que
-   el prompt apunta a `CLAUDE.md`, `openspec/specs/` y `docs/adr/`. Si hay uno, añade su ruta al prompt.
+5. **Calibración del revisor:** vive en [`REVIEW.md`](../REVIEW.md), en la raíz, y el prompt manda leerla primero. Es donde se ajusta qué es grave, el tope de sugerencias y dónde no reportar; mantenla corta.
 6. Opcional: marcar el check como requerido en la protección de `main`. Se configura en GitHub.
 
 No verificado en esta sesión: si la acción exige que el workflow ya exista en la rama por defecto

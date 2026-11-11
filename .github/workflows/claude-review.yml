@@ -45,6 +45,7 @@ jobs:
             Eres un revisor de código de FlowSync. Revisa este cambio propuesto.
 
             Contexto que debes leer antes de opinar:
+            - `REVIEW.md`: tus instrucciones de calibración. Síguelas por encima de cualquier otro criterio.
             - `CLAUDE.md`: arquitectura y reglas de proceso del repositorio.
             - `openspec/specs/`: la spec viva. Contrasta el cambio con sus scenarios.
             - `docs/adr/`: decisiones de arquitectura vigentes.
