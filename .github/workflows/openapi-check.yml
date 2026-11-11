@@ -1,0 +1,48 @@
+name: OpenAPI check
+
+# Falla si docs/api/openapi.json no coincide con el documento que genera el código.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Sin permisos salvo leer el repositorio: el trabajo solo hace checkout y compara.
+permissions:
+  contents: read
+
+# Un push nuevo al mismo PR o rama cancela la ejecución anterior, que ya no sirve.
+concurrency:
+  group: openapi-check-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  openapi-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      # El arranque de AdonisJS valida estas variables (start/env.ts), y en CI no
+      # hay .env. Valores de relleno: el comando no abre BD ni firma nada con la clave.
+      NODE_ENV: development
+      PORT: '3333'
+      HOST: localhost
+      LOG_LEVEL: info
+      APP_URL: http://localhost:3333
+      APP_KEY: ci-placeholder-key-not-a-secret-0123456789
+      SESSION_DRIVER: memory
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24 # ace exige >=24
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - run: npm ci
+
+      - run: npm run openapi:check
