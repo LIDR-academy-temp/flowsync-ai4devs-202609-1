@@ -90,3 +90,14 @@ Prueba el hook creando un archivo temporal co un correo de gmail.com, ejecuta gi
 ```
 
 **Qué salió:** el commit real pasó porque el hook se registró a mitad de sesión y Claude Code aún no lo había cargado; se deshizo con `git reset --soft`. Ejecutado a mano con el mismo JSON, bloqueó con la regla 3.2 y dejó la línea en el registro.
+
+## Prompt 6
+
+**Modelo:** Opus 5.5
+**Herramienta:** Claude Code
+
+```
+¿cómo lo reviso en /hooks
+```
+
+**Qué salió:** explicación de cómo revisar el hook en `/hooks` y de la alternativa de reiniciar la sesión.
