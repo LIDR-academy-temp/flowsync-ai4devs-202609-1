@@ -39,13 +39,32 @@ Información que consultas como agente. Lo que has leído y lo que podrías leer
 
 **Qué salió:** las tres listas a la primera; los `.env` se leyeron con los valores enmascarados en local. No se registró en el momento porque el prompt prohibía modificar archivos.
 
-## Prompt 2
+
+## Prompt 3
 
 **Modelo:** Opus 5.5
 **Herramienta:** Claude Code
 
 ```
-Añade el prompt anterior a prompts.md
+Crea un hook de Claude Code en .claude/hooks/datos-que-no-salen.sh, registrado en .claude/settings.json como PreToolUse con el matcher Bash, junto al hook existente. Debe leer el JSON de la entrada estándar mediante jq. El comando está en .tool_input.command, como en el hook de Prettier. Debes utilizar set -uo pipefail.
+
+Este hook:
+
+1) solo actúa si el comando contiene git commit. Ante cualquier otro comando, sale con 0 y no escribe nada.
+
+2) Revisa las líneas añadidas del diff preparado (git diff --cached). Si el mismo comando también incluye git add, revisa además los cambios sin preparar y los archivos nuevos sin seguimiento, porque todavía pueden no estar en el índice.
+
+3) Aplica estas tres reglas únicamente:
+
+3.1) Una clave con forma reconocible: AKIA seguido de 16 caracteres (Amazon Web Services, AWS), sk-ant- (Anthropic), ghp_ o github_pat_ (GitHub), AIza seguido de 35 caracteres (Google), xoxb-/xoxp-/xoxa- (Slack), un bloque ----BEGIN ... PRIVATE KEY-----, o una línea APP_KEY= con valor.
+
+3.2) Una dirección de correo cuyo dominio no sea example.com, example.org, example.net ni github.com. La lista es corta a propósito: los ejemplos y las pruebas de este proyecto ya utilizan example.com, reservado para ejemplos.
+
+3.3) Un archivo llamado exactamente .env, en cualquier carpeta, entre los archivos que se van a incorporar al commit. Los .env.example no cuentan.
+
+Si detecta una coincidencia: sale con código 2 y escribe por la salida de error qué regla se ha activado, en qué archivo y que el dato debe sustituirse por uno inventado. Además, añade una línea a docs/seguridad/registro-de-bloqueos.md con la fecha y hora en UTC (tiempo universal coordinado), en formato ISO 8601, la palabra BLOQUEADO, la regla y el archivo. Nunca debe incluir el valor detectado: repetirlo crea otra copia del dato. Si el registro no existe, lo crea con una cabecera de una línea.
+
+Si no detecta ninguna coincidencia: sale con 0 y no escribe nada.
 ```
 
-**Qué salió:** registrados este prompt y el anterior; borrado el ejemplo.
+**Qué salió:** hook creado y probado en un repo desechable con un caso por regla, con y sin `git add`; los patrones exigen el cuerpo de la clave para que citar el prefijo no bloquee.
