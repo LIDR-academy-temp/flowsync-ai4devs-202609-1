@@ -101,3 +101,14 @@ Prueba el hook creando un archivo temporal co un correo de gmail.com, ejecuta gi
 ```
 
 **Qué salió:** explicación de cómo revisar el hook en `/hooks` y de la alternativa de reiniciar la sesión.
+
+## Prompt 7
+
+**Modelo:** Opus 5.5
+**Herramienta:** Claude Code
+
+```
+Vuelve a comprar ahora si funciona el hook que hemos creado
+```
+
+**Qué salió:** tras reiniciar la sesión, el hook bloqueó el commit real con la regla 3.2; el commit no se creó y el archivo temporal se retiró.
