@@ -79,3 +79,14 @@ Crea un bloque breve en la sección de reglas de proceso del CLAUDE.md del repos
 ```
 
 **Qué salió:** bloque añadido a CLAUDE.md; AGENTS.md resultó ser un enlace simbólico a CLAUDE.md en Git, así que se dejó intacto.
+
+## Prompt 5
+
+**Modelo:** Opus 5.5
+**Herramienta:** Claude Code
+
+```
+Prueba el hook creando un archivo temporal co un correo de gmail.com, ejecuta git add e intenta hacer un commit. Después retira el archivo temporal tanto en el área de preparación como en el directorio de trabajo.
+```
+
+**Qué salió:** el commit real pasó porque el hook se registró a mitad de sesión y Claude Code aún no lo había cargado; se deshizo con `git reset --soft`. Ejecutado a mano con el mismo JSON, bloqueó con la regla 3.2 y dejó la línea en el registro.
