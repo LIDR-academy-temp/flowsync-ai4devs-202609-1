@@ -68,3 +68,14 @@ Si no detecta ninguna coincidencia: sale con 0 y no escribe nada.
 ```
 
 **Qué salió:** hook creado y probado en un repo desechable con un caso por regla, con y sin `git add`; los patrones exigen el cuerpo de la clave para que citar el prefijo no bloquee.
+
+## Prompt 4
+
+**Modelo:** Opus 5.5
+**Herramienta:** Claude Code
+
+```
+Crea un bloque breve en la sección de reglas de proceso del CLAUDE.md del repositorio. Debe explicar que el hook existe, qué tres cosas bloquea y cómo actuar ante un bloqueo: no desactivarlo ni saltárselo, sustituir el dato por uno inventado que cumpla las reglas y volver a intentarlo. También debe indicar que el registro se incluye en el commit con el resto del trabajo, porque es la evidencia del bloqueo. AGENTS.md no se modifica: el agente debe comprobar antes qué es.
+```
+
+**Qué salió:** bloque añadido a CLAUDE.md; AGENTS.md resultó ser un enlace simbólico a CLAUDE.md en Git, así que se dejó intacto.
