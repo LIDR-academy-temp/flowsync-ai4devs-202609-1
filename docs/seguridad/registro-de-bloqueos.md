@@ -4,3 +4,4 @@
 - 2026-11-17T20:13:11Z BLOQUEADO regla 2 (correo con un dominio no reservado para ejemplos) prueba-hook.tmp.md
 - 2026-11-17T20:13:19Z BLOQUEADO regla 2 (correo con un dominio no reservado para ejemplos) prueba-hook.tmp.md
 - 2026-11-17T20:22:49Z BLOQUEADO regla 2 (correo con un dominio no reservado para ejemplos) docs/capabilities/tasks/README.md
+- 2026-11-17T20:28:25Z BLOQUEADO regla 2 (correo con un dominio no reservado para ejemplos) prompts.md
