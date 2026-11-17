@@ -149,7 +149,13 @@ node ace serve --hmr        # http://localhost:3333
 En otra terminal, el recorrido completo de la capability:
 
 ```bash
-# 1. Una cuenta y su token
+# 1. Token con la cuenta de pruebas de Ana Pérez
+TOKEN=$(curl -s -X POST http://localhost:3333/api/v1/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"ana.perez@example.com","password":"secreto123"}' \
+  | python3 -c "import json,sys; print(json.load(sys.stdin)['data']['token'])")
+
+# (alternativa) Una cuenta nueva y su token
 TOKEN=$(curl -s -X POST http://localhost:3333/api/v1/auth/signup \
   -H 'Content-Type: application/json' \
   -d '{"fullName":"Ada Lovelace","email":"ada@example.com","password":"secreto123","passwordConfirmation":"secreto123"}' \
