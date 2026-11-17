@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeShellExecution": [
+      {
+        "command": "wsl -d Ubuntu -- bash -c \"cd /home/tcampof/LIDR/flowsync/flowsync-ai4devs-202609-2 && .claude/hooks/datos-que-no-salen.sh\"",
+        "failClosed": true
+      }
+    ]
+  }
+}
