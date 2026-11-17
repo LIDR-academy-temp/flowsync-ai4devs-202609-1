@@ -269,27 +269,3 @@ Guarda en el fichero prompts.md lo escrito y devuelto por el llm en esta sesion
 **Qué salió:** este archivo. Se borró el ejemplo de la plantilla; los correos con dominio real se sustituyeron antes de commitear para no disparar el hook.
 
 ---
-
-## Prompt 7
-
-**Modelo:** Opus 5.5 (`claude-opus-5-5`)
-**Herramienta:** Claude Code
-
-```
-Ahora quiero que escribe tus hallazgos en HALLAZGOS.md sin hacer commit
-```
-
-**Qué salió:** escribió una línea por punto, sin el dato dentro (comprobado con `grep`), y no commiteó. Se commiteó después, con el prompt 8.
-
----
-
-## Prompt 8
-
-**Modelo:** Opus 5.5 (`claude-opus-5-5`)
-**Herramienta:** Claude Code
-
-```
-abre un pull request (PR) desde mi fork hacia el repositorio del curso (github.com/LIDR-academy-temp/flowsync-ai4devs-202609-1). Comprueba que GitHub propone ese repositorio como base, en lugar de tu fork. Incluye el trabajo realizado, HALLAZGOS.md con tus tres líneas, prompts.md y el registro de bloqueos.
-```
-
-**Qué salió:** detectó que el fork real del repositorio del curso es el remoto `lidr-fork` (no `origin`) y que la rama base es `s9/start`, como en los PR anteriores.
