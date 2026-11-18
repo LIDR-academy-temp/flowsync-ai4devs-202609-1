@@ -178,6 +178,22 @@ curl -s -X PUT http://localhost:3333/api/v1/tasks/1/due-date \
   -d '{"dueDate":"2026-08-19","today":"2026-08-20"}'
 ```
 
+Con la cuenta de pruebas de Ana Pérez: se crea una vez con `signup` y, desde entonces, el token sale de
+`login`.
+
+```bash
+# Crear la cuenta (solo la primera vez)
+curl -s -X POST http://localhost:3333/api/v1/auth/signup \
+  -H 'Content-Type: application/json' \
+  -d '{"fullName":"Ana Pérez","email":"ana.perez@example.com","password":"secreto123","passwordConfirmation":"secreto123"}'
+
+# Obtener el token
+TOKEN=$(curl -s -X POST http://localhost:3333/api/v1/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"ana.perez@example.com","password":"secreto123"}' \
+  | python3 -c "import json,sys; print(json.load(sys.stdin)['data']['token'])")
+```
+
 Ojo: esto **escribe en la base de datos de desarrollo**. Para dejarla como estaba, `node ace
 migration:fresh`.
 
