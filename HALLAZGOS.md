@@ -23,4 +23,4 @@ Un dato personal o un secreto de este proyecto que el hook NO puede cazar, y por
 
 De qué dudaste, o qué no pudiste comprobar.
 
-- La entrada de las 21:12:36Z es un falso positivo en el disparo: el hook saltó porque un comando de verificación contenía el texto `git commit` sin pretender commitear (revisó el índice, que aún tenía el correo sin corregir), lo que muestra que decide por el texto del comando y no por lo que el comando hace.
+- La entrada de las 21:12:36Z es un falso positivo en el disparo: el hook saltó porque un comando de verificación contenía el texto `git commit` sin pretender commitear (revisó el índice, que aún tenía el correo sin corregir), lo que muestra que decide por el texto del comando y no por lo que el comando hace; y las de las 21:28:16Z bloquearon `prompts.md` (reglas 1 y 2) porque los prompts que la entrega exige literales describen los prefijos de clave y el correo ficticio de la prueba, así que el hook no distingue un ejemplo citado de un dato real y `prompts.md` queda sin commitear.
