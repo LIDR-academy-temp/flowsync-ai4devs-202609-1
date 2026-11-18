@@ -11,16 +11,18 @@ repite el correo o el secreto, eso es otra copia del dato (y también es un hall
 
 Qué regla saltó en tu prueba, y la línea literal que dejó el registro.
 
--
+- Se activó la regla 2 al intentar incorporar al README un correo de un dominio no permitido. La evidencia fue: - 2026-11-18T17:12:09Z BLOQUEADO Regla 2 (correo de un dominio no permitido) — docs/capabilities/tasks/README.md.
+
+
 
 ## 2. Lo que el hook no puede cazar
 
 Un dato personal o un secreto de este proyecto que el hook NO puede cazar, y por qué.
 
--
+- El nombre completo de un usuario, almacenado en users.full_name, es un dato personal que podría incorporarse a la documentación sin que el hook lo detectase, puesto que ninguna de sus tres reglas identifica nombres de personas.
 
 ## 3. Tu duda
 
 De qué dudaste, o qué no pudiste comprobar.
 
--
+- Aunque comprobé que el hook bloqueaba los commits con correos no permitidos, no pude observar directamente el código de salida 2 ni verifiqué mediante pruebas de ejecución las reglas de detección de secretos y archivos .env.
