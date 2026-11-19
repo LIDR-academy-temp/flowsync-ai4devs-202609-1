@@ -9,18 +9,17 @@ repite el correo o el secreto, eso es otra copia del dato (y también es un hall
 
 ## 1. La regla que saltó
 
-Qué regla saltó en tu prueba, y la línea literal que dejó el registro.
+# Registro de bloqueos del hook datos-que-no-salen
+- 2026-11-19T04:19:13Z BLOQUEADO regla 2 (correo de una persona) en prueba-hook.tmp.txt
+- 2026-11-19T04:22:05Z BLOQUEADO regla 2 (correo de una persona) en prueba-hook.tmp.txt
 
--
 
 ## 2. Lo que el hook no puede cazar
 
-Un dato personal o un secreto de este proyecto que el hook NO puede cazar, y por qué.
+En las pruebas básicas, si detectó todo
 
 -
 
 ## 3. Tu duda
 
-De qué dudaste, o qué no pudiste comprobar.
-
--
+No pude comprobar cada uno de los casos
