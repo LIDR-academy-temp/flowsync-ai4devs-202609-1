@@ -96,3 +96,14 @@ Compruébalo con una tarea que ya debería estar vencida
 ```
 
 **Qué salió:** comprobado por la API con una tarea de dueDate 2026-01-01 y today=2026-11-21: recién asignada (PUT) sale isOverdue=true, pero leída de PostgreSQL (GET) sale false y dueDate llega como "2026-01-01T00:00:00.000Z"; el comentario de isOverdueOn ya no es verdad. Además una tarea done sale vencida (fallo previo). De paso: el `make start` anterior a la migración seguía en el 3333 con la config de SQLite.
+
+## Prompt 7
+
+**Modelo:** Opus 5.5
+**Herramienta:** Claude Code
+
+```
+Cuenta con una consulta cuántas filas cambian de valor
+```
+
+**Qué salió:** 0 filas: la base SQLite de partida (backend/tmp/db.sqlite3) tiene 0 filas en users, auth_access_tokens y tasks, y la migración no copia datos. La única tarea con fecha en PostgreSQL es la de la prueba del prompt 6. El árbol de reversibilidad no está en el repo, así que Claude no asignó rama.
