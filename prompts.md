@@ -74,3 +74,14 @@ Corre la comprobación de tipos y mira el diff de schema.ts
 ```
 
 **Qué salió:** typecheck verde y diff de schema.ts vacío respecto a s10/start; los tipos de status y due_date los fija database/schema_rules.ts, pero pg devuelve la columna date como objeto Date, no como string.
+
+## Prompt 5
+
+**Modelo:** Opus 5.5
+**Herramienta:** Claude Code
+
+```
+Busca cómo decide el proyecto si una tarea está vencida
+```
+
+**Qué salió:** la regla está en Task.isOverdueOn (backend/app/models/task.ts), comparación de texto `dueDate < referenceDay`; el comentario promete además «no está hecha» y el código no lo comprueba. Pendiente de verificar con una tarea vencida real.
