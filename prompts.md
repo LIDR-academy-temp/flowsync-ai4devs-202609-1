@@ -118,3 +118,14 @@ Escribe las tres líneas en HALLAZGOS.md
 ```
 
 **Qué salió:** tres líneas escritas en HALLAZGOS.md con lo medido en los prompts 4–7; la rama del árbol queda sin asignar.
+
+## Prompt 9
+
+**Modelo:** Opus 5.5
+**Herramienta:** Claude Code
+
+```
+No veo cambios en el fichero HALLAZGOS.md
+```
+
+**Qué salió:** los cambios sí estaban, en disco y commiteados en 619e26a; al estar commiteados el editor no los marca como modificados, y la rama aún no estaba empujada.
