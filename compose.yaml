@@ -1,0 +1,55 @@
+# Bases de datos de FlowSync: PostgreSQL 17 con pgvector.
+#
+#   db       desarrollo, en el 54410, con volumen: los datos sobreviven a un `down`.
+#   db-test  pruebas, en el 54411, en memoria (tmpfs): cada arranque empieza vacío.
+#
+# Se levantan con `make db-up`, que espera (`--wait`) a que las dos comprobaciones
+# de salud den verde. En el primer arranque la imagen crea la base y reinicia el
+# servidor, y mientras tanto rechaza conexiones: sin esa espera, una migración
+# lanzada justo después falla con «connection refused».
+#
+# Las credenciales son de desarrollo local y no son secretas. Tienen que coincidir
+# con las de backend/.env (db) y backend/.env.test (db-test).
+
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: flowsync
+      POSTGRES_PASSWORD: flowsync
+      POSTGRES_DB: flowsync
+    ports:
+      - '54410:5432'
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      # `-h 127.0.0.1` fuerza TCP: durante la inicialización el servidor temporal
+      # solo escucha por el socket Unix, y un pg_isready por socket daría verde
+      # antes de tiempo.
+      test: ['CMD-SHELL', 'pg_isready -h 127.0.0.1 -U flowsync -d flowsync']
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+
+  db-test:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: flowsync
+      POSTGRES_PASSWORD: flowsync
+      POSTGRES_DB: flowsync_test
+    ports:
+      - '54411:5432'
+    # Sin volumen: el directorio de datos vive en memoria y desaparece con el
+    # contenedor.
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -h 127.0.0.1 -U flowsync -d flowsync_test']
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+
+volumes:
+  db-data:
