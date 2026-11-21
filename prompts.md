@@ -85,3 +85,14 @@ Busca cómo decide el proyecto si una tarea está vencida
 ```
 
 **Qué salió:** la regla está en Task.isOverdueOn (backend/app/models/task.ts), comparación de texto `dueDate < referenceDay`; el comentario promete además «no está hecha» y el código no lo comprueba. Pendiente de verificar con una tarea vencida real.
+
+## Prompt 6
+
+**Modelo:** Opus 5.5
+**Herramienta:** Claude Code
+
+```
+Compruébalo con una tarea que ya debería estar vencida
+```
+
+**Qué salió:** comprobado por la API con una tarea de dueDate 2026-01-01 y today=2026-11-21: recién asignada (PUT) sale isOverdue=true, pero leída de PostgreSQL (GET) sale false y dueDate llega como "2026-01-01T00:00:00.000Z"; el comentario de isOverdueOn ya no es verdad. Además una tarea done sale vencida (fallo previo). De paso: el `make start` anterior a la migración seguía en el 3333 con la config de SQLite.
