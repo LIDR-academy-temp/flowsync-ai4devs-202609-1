@@ -107,3 +107,14 @@ Cuenta con una consulta cuántas filas cambian de valor
 ```
 
 **Qué salió:** 0 filas: la base SQLite de partida (backend/tmp/db.sqlite3) tiene 0 filas en users, auth_access_tokens y tasks, y la migración no copia datos. La única tarea con fecha en PostgreSQL es la de la prueba del prompt 6. El árbol de reversibilidad no está en el repo, así que Claude no asignó rama.
+
+## Prompt 8
+
+**Modelo:** Opus 5.5
+**Herramienta:** Claude Code
+
+```
+Escribe las tres líneas en HALLAZGOS.md
+```
+
+**Qué salió:** tres líneas escritas en HALLAZGOS.md con lo medido en los prompts 4–7; la rama del árbol queda sin asignar.
