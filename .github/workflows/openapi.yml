@@ -39,6 +39,13 @@ jobs:
       APP_KEY: clave-de-ci-sin-valor-secreto
       APP_URL: http://127.0.0.1:3333
       SESSION_DRIVER: memory
+      # Las `DB_*` también las exige `start/env.ts`, pero el comando no abre
+      # conexión: no hace falta levantar PostgreSQL en el runner.
+      DB_HOST: 127.0.0.1
+      DB_PORT: 54411
+      DB_USER: flowsync
+      DB_PASSWORD: flowsync
+      DB_DATABASE: flowsync_test
     steps:
       - uses: actions/checkout@v7
 

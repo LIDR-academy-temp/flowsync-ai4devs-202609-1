@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 FlowSync: proyecto de práctica del curso (gestión de tareas en equipo). Monorepo sin workspaces ni `package.json` raíz — **todos los comandos se ejecutan desde `backend/` o desde `frontend/`**.
 
-- `backend/` — API AdonisJS 7 + Lucid 22 + SQLite, escucha en `http://localhost:3333`
+- `backend/` — API AdonisJS 7 + Lucid 22 + PostgreSQL 17 (Docker, `compose.yaml` en la raíz), escucha en `http://localhost:3333`
 - `frontend/` — React 19 + Vite 8, escucha en `http://localhost:5173`
 
 La rama `s1/start` es el punto de partida de los alumnos; `main` es la base del repo cliente.
@@ -18,7 +18,8 @@ La rama `s1/start` es el punto de partida de los alumnos; `main` es la base del 
 ```bash
 npm install
 cp .env.example .env && node ace generate:key   # solo la primera vez
-node ace migration:run                          # crea tmp/db.sqlite3 y regenera database/schema.ts
+make db-up                                      # desde la raíz: levanta db (:54410) y db-test (:54411) y espera a que estén sanas
+node ace migration:run                          # migra la base de desarrollo y regenera database/schema.ts (make db-migrate migra las dos)
 npm run dev                                     # node ace serve --hmr
 npm test                                        # node ace test
 npm run openapi:generate                        # escribe el documento OpenAPI en docs/api/openapi.json
@@ -38,7 +39,7 @@ node ace test --groups=... --tags=... --failed --watch
 node ace make:test --suite=functional # scaffolding de un fichero de test
 ```
 
-Ojo con la BD en tests: `config/database.ts` define una única conexión SQLite apuntando a `app.tmpPath('db.sqlite3')` sin override por entorno, así que las suites functional pegan contra el **mismo fichero** que el servidor de desarrollo. `.env.test` solo cambia `SESSION_DRIVER=memory`. Si añades tests que escriben, aísla con los hooks de `testUtils.db()` (truncate / transacción global) o el estado se filtra entre runs.
+BD en tests: `config/database.ts` define una única conexión `pg` leída de las variables `DB_*`; `.env.test` (que Adonis carga solo con `NODE_ENV=test`) las apunta al servicio `db-test` (puerto 54411, en tmpfs, sin volumen). `tests/bootstrap.ts` migra esa base antes de la suite y la resetea al terminar, con el `MigrationRunner` de Lucid y no con `testUtils.db().migrate()`: esa vía arranca el kernel de Ace, cuya validación de comandos (jsonschema 1.5) revienta en Node 24.21 con «Invalid URL» — por lo mismo `node ace list` falla. Dentro de cada grupo, aísla igualmente con `testUtils.db().withGlobalTransaction()`. Atajos desde la raíz: `make db-up`, `make db-down`, `make db-migrate`, `make test`.
 
 Otros comandos útiles: `node ace list:routes`, `node ace make:controller|model|migration|validator|transformer|service`, `node ace migration:fresh`, `node ace repl`.
 
