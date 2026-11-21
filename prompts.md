@@ -129,3 +129,14 @@ No veo cambios en el fichero HALLAZGOS.md
 ```
 
 **Qué salió:** los cambios sí estaban, en disco y commiteados en 619e26a; al estar commiteados el editor no los marca como modificados, y la rama aún no estaba empujada.
+
+## Prompt 10
+
+**Modelo:** Opus 5.5
+**Herramienta:** Claude Code
+
+```
+empuja la rama y abre el PR
+```
+
+**Qué salió:** rama empujada a origin y PR abierto contra s10/start del repo del curso, seguido del pase del adversarial-reviewer.
