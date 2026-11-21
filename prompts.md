@@ -63,3 +63,14 @@ Conserva intactas las migraciones existentes.
 ```
 
 **Qué salió:** compose.yaml con db/db-test sanos tras arranque en frío, 23/23 tests contra db-test, typecheck verde y migraciones intactas. Hubo que migrar la base de pruebas con MigrationRunner porque `testUtils.db().migrate()` revienta en Node 24.21 («Invalid URL» de jsonschema en ace), fallo previo que también rompe `node ace list` y `openapi:check`.
+
+## Prompt 4
+
+**Modelo:** Opus 5.5
+**Herramienta:** Claude Code
+
+```
+Corre la comprobación de tipos y mira el diff de schema.ts
+```
+
+**Qué salió:** typecheck verde y diff de schema.ts vacío respecto a s10/start; los tipos de status y due_date los fija database/schema_rules.ts, pero pg devuelve la columna date como objeto Date, no como string.
