@@ -39,3 +39,23 @@ Comprobado copiando `backend/tmp/db.sqlite3` a la base `db` (2 usuarios, 3 token
 | `status` | Cualquier texto; solo lo frena el validador | `CHECK` con los tres valores | Un `INSERT` directo con `'inventado'` entraba antes del `CHECK` y ahora se rechaza. |
 | `title varchar(200)` y `email varchar(254)` | Longitud declarada pero **no aplicada** | Longitud aplicada | Hoy no cambia nada, porque el validador ya corta en 200 y 254 antes de llegar a la base. |
 | Secuencias de los `id` | Autoincremento implícito | `serial`: tras una copia con `id` explícitos, la secuencia sigue en 1 | La copia ajusta cada secuencia con `setval` al `max(id) + 1`. Sin eso, el siguiente alta choca con la clave primaria. |
+
+## Anexo: las tres comprobaciones de después (2026-11-23, con PostgreSQL y la suite en verde, 25/25)
+
+1. **Comprobación de tipos: pasa.** `npm run typecheck` sale sin errores. No es una buena noticia: solo dice que el código coincide con lo que se declara, y lo que se declara no cambió.
+2. **Diff de `backend/database/schema.ts` contra `s10/start`: vacío.** Lo que fija los tipos es `backend/database/schema_rules.ts`. Lo medí generando el esquema contra PostgreSQL sin esas reglas (de forma temporal, en `db-test`, y luego restaurado). Salen dos declaraciones distintas:
+   - `TaskSchema.dueDate`: `@column()` + `string | null` pasa a `@column.date()` + `DateTime | null`.
+   - `TaskSchema.status`: `'pending' | 'in_progress' | 'done'` pasa a `string`.
+
+   La regla de `due_date` le asegura a TypeScript que es texto, pero no cambia lo que entrega el driver. Así que el diff vacío ocultaba justo el cambio: en tiempo de ejecución, `pg` devolvía un `Date`.
+3. **Cómo se decide si una tarea está vencida:** con `Task.isOverdueOn()` (`backend/app/models/task.ts`), que hace `this.dueDate < referenceDay`. El comentario dice que funciona porque se compara «texto contra texto». Lo comprobé con `GET /api/v1/tasks/:id?today=2026-11-23` sobre tareas que ya deberían estar vencidas:
+
+   | Tarea | Estado | Fecha | Sin el *type parser* | Con el *type parser* |
+   |---|---|---|---|---|
+   | #4 | pendiente | 2026-08-26 | `"2026-08-26T00:00:00.000Z"`, **no** vencida | `"2026-08-26"`, vencida |
+   | #6 | pendiente | 2026-08-28 | **no** vencida | vencida |
+   | #1 | en curso | 2026-11-24 | no vencida | no vencida (correcto) |
+
+   Sin el *type parser* el comentario es falso: se compara un `Date` con un texto y el resultado es siempre `false`. Con el *type parser* de `config/database.ts` vuelve a ser verdad.
+
+   **Otra cosa que no tiene que ver con el motor:** el mismo comentario promete que una tarea hecha no sale vencida, y la spec lo exige (scenario «Una tarea hecha no se anuncia vencida»). Pero el código no mira el estado: la tarea #8, hecha y con fecha 2020-01-01, sale `isOverdue: true`. Ya pasaba con SQLite (está en la foto de referencia), así que no lo ha introducido la migración. No lo he tocado.
