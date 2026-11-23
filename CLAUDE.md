@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 FlowSync: proyecto de práctica del curso (gestión de tareas en equipo). Monorepo sin workspaces ni `package.json` raíz — **todos los comandos se ejecutan desde `backend/` o desde `frontend/`**.
 
-- `backend/` — API AdonisJS 7 + Lucid 22 + SQLite, escucha en `http://localhost:3333`
+- `backend/` — API AdonisJS 7 + Lucid 22 + PostgreSQL 17 (Docker, `compose.yaml` en la raíz), escucha en `http://localhost:3333`
 - `frontend/` — React 19 + Vite 8, escucha en `http://localhost:5173`
 
 La rama `s1/start` es el punto de partida de los alumnos; `main` es la base del repo cliente.
@@ -18,7 +18,9 @@ La rama `s1/start` es el punto de partida de los alumnos; `main` es la base del 
 ```bash
 npm install
 cp .env.example .env && node ace generate:key   # solo la primera vez
-node ace migration:run                          # crea tmp/db.sqlite3 y regenera database/schema.ts
+docker compose up -d --wait                     # desde la raíz (o `make db-up`): db en 54410, db-test en 54411
+node ace migration:run                          # migra la base de desarrollo y regenera database/schema.ts
+NODE_ENV=test node ace migration:run            # migra la base de pruebas (o `make migrate` para las dos)
 npm run dev                                     # node ace serve --hmr
 npm test                                        # node ace test
 npm run openapi:generate                        # escribe el documento OpenAPI en docs/api/openapi.json
@@ -28,7 +30,7 @@ npm run format                                  # prettier --write
 npm run typecheck                               # tsc --noEmit
 ```
 
-Tests (Japa). Dos suites declaradas en `adonisrc.ts`: `unit` (`tests/unit/**/*.spec.ts`, timeout 2s) y `functional` (`tests/functional/**/*.spec.ts`, timeout 30s). Hoy solo hay tests **functional de `auth`** (`tests/functional/auth/`): registro, login, sesión e iniciales. **`tests/unit/` no existe**, y la capability `tasks` no tiene ni un test.
+Tests (Japa). Dos suites declaradas en `adonisrc.ts`: `unit` (`tests/unit/**/*.spec.ts`, timeout 2s) y `functional` (`tests/functional/**/*.spec.ts`, timeout 30s). Hoy solo hay tests **functional**: los de `auth` (`tests/functional/auth/`: registro, login, sesión e iniciales) y dos de `tasks` (`tests/functional/tasks/`: el responsable y que la fecha de vencimiento vuelve de la base como texto). **`tests/unit/` no existe**.
 
 ```bash
 node ace test unit                    # una suite
@@ -38,7 +40,9 @@ node ace test --groups=... --tags=... --failed --watch
 node ace make:test --suite=functional # scaffolding de un fichero de test
 ```
 
-Ojo con la BD en tests: `config/database.ts` define una única conexión SQLite apuntando a `app.tmpPath('db.sqlite3')` sin override por entorno, así que las suites functional pegan contra el **mismo fichero** que el servidor de desarrollo. `.env.test` solo cambia `SESSION_DRIVER=memory`. Si añades tests que escriben, aísla con los hooks de `testUtils.db()` (truncate / transacción global) o el estado se filtra entre runs.
+BD en tests: `config/database.ts` define una única conexión `pg` que lee `DB_*` del entorno. `.env` apunta a `db` (54410, con volumen) y `.env.test` —que el framework carga solo con `NODE_ENV=test`, y que `node ace test` pone— apunta a `db-test` (54411, en memoria, sin volumen: se vacía al reiniciar el contenedor). Tras un `make db-down` la base de pruebas vuelve vacía: `make test` la migra antes de correr la suite. Aísla igualmente los tests que escriben con `testUtils.db().withGlobalTransaction()`, para que no se pisen dentro de una misma ejecución.
+
+Las columnas `date` (`tasks.due_date`) se leen como texto `AAAA-MM-DD` gracias al `pg.types.setTypeParser` de `config/database.ts`: sin él el driver devuelve un `Date` y `Task.isOverdueOn()` deja de funcionar sin que falle nada. No lo quites.
 
 Otros comandos útiles: `node ace list:routes`, `node ace make:controller|model|migration|validator|transformer|service`, `node ace migration:fresh`, `node ace repl`.
 

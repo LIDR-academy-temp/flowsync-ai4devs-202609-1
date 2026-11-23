@@ -112,7 +112,9 @@ empiezan por «La interfaz SHALL…».
 cd backend
 npm install
 cp .env.example .env && node ace generate:key   # solo la primera vez
-node ace migration:run                          # crea tmp/db.sqlite3
+docker compose up -d --wait                     # desde la raíz, o `make db-up`
+node ace migration:run                          # migra la base de desarrollo (db, 54410)
+NODE_ENV=test node ace migration:run            # migra la base de pruebas (db-test, 54411)
 ```
 
 ### Tests automáticos
@@ -125,18 +127,22 @@ node ace test --tests="el responsable llega con su nombre y sus iniciales"
 ```
 
 Los tests de esta capability están en
-[`backend/tests/functional/tasks/`](../../../backend/tests/functional/tasks/). **Hoy solo hay uno**,
-`assignee.spec.ts`, que cubre 3 de los 124 scenarios de la spec: los del requisito *Lo que cada tarea
-muestra de su responsable*. Todo lo demás está sin cubrir, así que el verde de la suite **no** es
+[`backend/tests/functional/tasks/`](../../../backend/tests/functional/tasks/). **Hoy hay dos**:
+`assignee.spec.ts`, que cubre 3 de los 124 scenarios de la spec (los del requisito *Lo que cada tarea
+muestra de su responsable*), y `due_date_roundtrip.spec.ts`, que no cubre un scenario sino una
+garantía del motor: que la fecha de vencimiento vuelve de la base como el mismo texto `AAAA-MM-DD`.
+Todo lo demás está sin cubrir, así que el verde de la suite **no** es
 señal de que la capability cumpla su spec.
 
 Dos cosas que hay que saber antes de escribir un test aquí:
 
-- La suite functional pega contra **el mismo fichero SQLite que el servidor de desarrollo**:
-  [`config/database.ts`](../../../backend/config/database.ts) declara una sola conexión sin override
-  por entorno. Aísla siempre con `testUtils.db().withGlobalTransaction()` en un `group.each.setup`,
-  como hacen los tests existentes. **No** uses truncate: se llevaría por delante los datos con los que
-  estés trabajando.
+- La suite functional corre contra **`db-test`**, una base PostgreSQL en memoria que `.env.test`
+  selecciona solo en el entorno de pruebas. Aun así, aísla siempre con
+  `testUtils.db().withGlobalTransaction()` en un `group.each.setup`, como hacen los tests existentes,
+  para que los tests de una misma ejecución no se pisen.
+- Si un test lee una fecha de vencimiento, que la lea **recargada de la base** y no de la instancia
+  recién guardada: es lo único que detecta que el driver la devuelva como `Date` en vez de como texto
+  (ver `due_date_roundtrip.spec.ts`).
 - Un test por scenario, citando el requisito en la cabecera del fichero. Es lo que permite leer la
   spec y saber qué falta.
 
