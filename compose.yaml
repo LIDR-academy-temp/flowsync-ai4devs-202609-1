@@ -1,0 +1,54 @@
+# Bases de datos de FlowSync en local: PostgreSQL 17 (con pgvector) en Docker.
+#
+# - db:      desarrollo, en el 54410, con volumen: los datos sobreviven a `make db-down`.
+# - db-test: pruebas, en el 54411, en memoria (tmpfs) y sin volumen: cada arranque
+#            empieza vacío, y ninguna ejecución de la suite hereda lo que dejó la anterior.
+#
+# Las credenciales son solo de uso local y no protegen nada: los puertos se publican
+# únicamente en 127.0.0.1.
+#
+# Levántalas con `make db-up`, que espera (`--wait`) a que las dos comprobaciones de
+# salud pasen. La primera vez la imagen inicializa la base y no acepta conexiones
+# mientras tanto; sin esa espera, la primera migración fallaría con la conexión rechazada.
+
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: flowsync
+      POSTGRES_PASSWORD: flowsync
+      POSTGRES_DB: flowsync
+    ports:
+      - "127.0.0.1:54410:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      # Con -h 127.0.0.1 se comprueba por TCP. Durante la inicialización el script de
+      # arranque de la imagen levanta un servidor temporal que solo escucha por socket
+      # Unix, así que un pg_isready por socket daría «sano» antes de tiempo.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U flowsync -d flowsync"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 10s
+
+  db-test:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: flowsync
+      POSTGRES_PASSWORD: flowsync
+      POSTGRES_DB: flowsync_test
+    ports:
+      - "127.0.0.1:54411:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test:
+        ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U flowsync -d flowsync_test"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 10s
+
+volumes:
+  db-data:
