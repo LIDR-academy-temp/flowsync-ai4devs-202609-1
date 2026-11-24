@@ -13,8 +13,13 @@ SHELL := /bin/bash
 BACKEND  := backend
 FRONTEND := frontend
 
+# Las DB_* exportadas en la shell ganan a los .env del backend. Las recetas que
+# tocan una base las borran del entorno para que cada una vaya solo a la suya:
+# desarrollo lee backend/.env y pruebas backend/.env.test.
+SIN_DB_ENV := env -u DB_HOST -u DB_PORT -u DB_USER -u DB_PASSWORD -u DB_DATABASE
+
 .DEFAULT_GOAL := help
-.PHONY: help setup start install env migrate clean
+.PHONY: help setup start install env migrate clean db-up db-down db-migrate db-migrate-dev db-migrate-test test
 
 # La ayuda se genera a partir de los comentarios `## ...` de cada target, para
 # que no haya un segundo listado que mantener a mano y que pueda divergir.
@@ -22,7 +27,7 @@ help: ## Muestra esta ayuda
 	@echo "FlowSync — targets disponibles:"
 	@echo ""
 	@grep -E '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) \
-		| awk 'BEGIN { FS = ":.*## " }; { printf "  make %-8s %s\n", $$1, $$2 }'
+		| awk 'BEGIN { FS = ":.*## " }; { printf "  make %-11s %s\n", $$1, $$2 }'
 	@echo ""
 
 # ---------------------------------------------------------------------------
@@ -61,9 +66,40 @@ env:
 		cd $(BACKEND) && node ace generate:key; \
 	fi
 
-migrate:
-	@echo "🗃️  Ejecutando migraciones..."
-	@cd $(BACKEND) && node ace migration:run
+migrate: db-migrate-dev
+
+# ---------------------------------------------------------------------------
+# bases de datos (PostgreSQL en Docker, ver compose.yaml)
+# ---------------------------------------------------------------------------
+
+# `--wait` no vuelve hasta que el healthcheck de los dos servicios da sano, así
+# que lo que venga detrás (migraciones, tests) ya encuentra la base aceptando
+# conexiones.
+db-up: ## Levanta las bases de desarrollo (54410) y pruebas (54411)
+	@command -v docker >/dev/null 2>&1 || { echo "❌ Docker no está instalado."; exit 1; }
+	@echo "🐘 Levantando PostgreSQL (db y db-test)..."
+	@docker compose up -d --wait db db-test
+
+# Sin `-v`: el volumen de desarrollo se conserva. La de pruebas va en tmpfs y se
+# pierde al parar, a propósito.
+db-down: ## Para las bases (desarrollo conserva datos, pruebas no)
+	@echo "🛑 Parando PostgreSQL..."
+	@docker compose down
+
+db-migrate: db-migrate-dev db-migrate-test ## Migra las dos bases
+
+db-migrate-dev: db-up
+	@echo "🗃️  Migrando la base de desarrollo..."
+	@cd $(BACKEND) && $(SIN_DB_ENV) NODE_ENV=development node ace migration:run
+
+db-migrate-test: db-up
+	@echo "🗃️  Migrando la base de pruebas..."
+	@cd $(BACKEND) && $(SIN_DB_ENV) NODE_ENV=test node ace migration:run
+
+# La base de pruebas es efímera: se migra siempre antes de la suite.
+test: db-migrate-test ## Corre las pruebas del backend contra la base de pruebas
+	@echo "🧪 Ejecutando la suite del backend..."
+	@cd $(BACKEND) && $(SIN_DB_ENV) npm test
 
 # ---------------------------------------------------------------------------
 # start
@@ -112,8 +148,9 @@ start: ## Levanta backend y frontend a la vez
 # clean
 # ---------------------------------------------------------------------------
 
-clean: ## Borra node_modules y la base de datos SQLite
+# No borra backend/tmp/db.sqlite3: es la base del motor anterior y se conserva.
+# Tampoco toca los volúmenes de Docker.
+clean: ## Borra node_modules (conserva la base SQLite y los volúmenes)
 	@echo "🧹 Limpiando..."
 	@rm -rf $(BACKEND)/node_modules $(FRONTEND)/node_modules
-	@rm -f $(BACKEND)/tmp/db.sqlite3 $(BACKEND)/tmp/db.sqlite3-wal $(BACKEND)/tmp/db.sqlite3-shm
 	@echo "✅ Listo. Vuelve a ejecutar: make setup"
