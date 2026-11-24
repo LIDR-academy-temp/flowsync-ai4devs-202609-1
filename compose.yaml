@@ -1,0 +1,51 @@
+# FlowSync — bases de datos PostgreSQL locales.
+#
+#   db       desarrollo, puerto 54410, datos en el volumen nombrado `flowsync-pgdata`.
+#   db-test  pruebas,     puerto 54411, datos en tmpfs: se pierden al parar el contenedor.
+#
+# Las credenciales son de mentira y solo valen en local.
+#
+# El healthcheck va por TCP (`-h 127.0.0.1`) a propósito: la primera vez, el
+# entrypoint de la imagen arranca un servidor temporal que solo escucha en el
+# socket Unix mientras crea la base. Un `pg_isready` por socket daría OK contra
+# ese servidor temporal; por TCP solo responde el servidor definitivo.
+
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: flowsync
+      POSTGRES_PASSWORD: flowsync
+      POSTGRES_DB: flowsync_dev
+    ports:
+      - '127.0.0.1:54410:5432'
+    volumes:
+      - flowsync-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -h 127.0.0.1 -p 5432 -U flowsync -d flowsync_dev']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 10s
+
+  db-test:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: flowsync
+      POSTGRES_PASSWORD: flowsync
+      POSTGRES_DB: flowsync_test
+    ports:
+      - '127.0.0.1:54411:5432'
+    # En memoria: tapa el VOLUME que declara la imagen, así que no se crea
+    # ningún volumen, ni nombrado ni anónimo.
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -h 127.0.0.1 -p 5432 -U flowsync -d flowsync_test']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 10s
+
+volumes:
+  flowsync-pgdata:
