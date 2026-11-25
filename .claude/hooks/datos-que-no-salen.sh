@@ -57,6 +57,14 @@ if [ "$con_add" -eq 1 ]; then
     | grep -E '(^|/)\.env$' >>"$ficheros"
 fi
 
+# El hook corre ANTES del comando: si el propio comando escribe el dato
+# (`echo ... > f && git add f && git commit`), el fichero aún no existe.
+# Se revisa también el texto del comando previo al `git commit`, sin el mensaje
+# del commit (que lleva el Co-Authored-By con un correo legítimo).
+printf '%s' "$cmd" | awk 'BEGIN { RS = "\001" }
+  { if (match($0, /git( -C [^ ]+)? commit/)) print substr($0, 1, RSTART - 1) }' \
+  | awk '{ print "(comando previo al commit)\t" $0 }' >>"$lineas"
+
 # Regla 1: clave con forma reconocible
 tab=$(printf '\t')
 grep -E "${tab}.*(AKI[A][0-9A-Z]{16}|sk-an[t]-|gh[p]_|github_pa[t]_|AIz[a][0-9A-Za-z_-]{35}|xo[x][bpa]-|-----BEGI[N] [A-Z ]*PRIVATE KE[Y]-----)|^[^${tab}]*${tab}[[:space:]]*(export[[:space:]]+)?APP_KE[Y]=[^[:space:]]" "$lineas" \
