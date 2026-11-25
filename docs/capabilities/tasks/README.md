@@ -109,16 +109,18 @@ empiezan por «La interfaz SHALL…».
 ### Preparar el backend
 
 ```bash
+make db-up                                      # desde la raíz: levanta PostgreSQL (dev :54410, test :54411)
 cd backend
 npm install
 cp .env.example .env && node ace generate:key   # solo la primera vez
-node ace migration:run                          # crea tmp/db.sqlite3
+node ace migration:run                          # migra la base de desarrollo
 ```
 
 ### Tests automáticos
 
 ```bash
-node ace test                                   # todo
+make test                                       # desde la raíz: levanta y migra db-test, y corre todo
+node ace test                                   # todo (db-test ya levantada y migrada)
 node ace test functional                        # solo la suite functional
 node ace test --files=assignee                  # un fichero
 node ace test --tests="el responsable llega con su nombre y sus iniciales"
@@ -132,11 +134,12 @@ señal de que la capability cumpla su spec.
 
 Dos cosas que hay que saber antes de escribir un test aquí:
 
-- La suite functional pega contra **el mismo fichero SQLite que el servidor de desarrollo**:
-  [`config/database.ts`](../../../backend/config/database.ts) declara una sola conexión sin override
-  por entorno. Aísla siempre con `testUtils.db().withGlobalTransaction()` en un `group.each.setup`,
-  como hacen los tests existentes. **No** uses truncate: se llevaría por delante los datos con los que
-  estés trabajando.
+- La suite functional pega contra **su propia base**, el servicio `db-test` de
+  [`compose.yaml`](../../../compose.yaml) (puerto 54411, en memoria y sin volumen), no contra la de
+  desarrollo: [`backend/.env.test`](../../../backend/.env.test) cambia puerto y base cuando
+  `NODE_ENV=test`. Esa base arranca vacía cada vez, así que hay que migrarla antes de correr la suite
+  (`make test` lo hace). Aun así, aísla cada test con `testUtils.db().withGlobalTransaction()` en un
+  `group.each.setup`, como hacen los existentes: los tests de una misma ejecución comparten base.
 - Un test por scenario, citando el requisito en la cabecera del fichero. Es lo que permite leer la
   spec y saber qué falta.
 

@@ -1,0 +1,55 @@
+# FlowSync — bases de datos PostgreSQL para desarrollo y pruebas.
+#
+# Credenciales de mentira, solo para local: los puertos se publican únicamente
+# en 127.0.0.1, así que nada de esto es accesible desde fuera de la máquina.
+#
+# Arranque: `make db-up` (usa `docker compose up -d --wait`, que no vuelve hasta
+# que los dos healthchecks dan sano).
+
+services:
+  # Base de desarrollo. Persistente: sus datos viven en el volumen `db-data` y
+  # sobreviven a `docker compose down` (no a `down -v`).
+  db:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: flowsync
+      POSTGRES_PASSWORD: flowsync
+      POSTGRES_DB: flowsync_dev
+    ports:
+      - '127.0.0.1:54410:5432'
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      # Por TCP (-h 127.0.0.1) y no por socket a propósito: la primera vez, el
+      # entrypoint de la imagen levanta un servidor temporal que solo escucha
+      # por el socket Unix mientras crea la base. Un `pg_isready` sin `-h` lo
+      # daría por sano antes de que acepte conexiones de verdad.
+      test: ['CMD-SHELL', 'pg_isready -h 127.0.0.1 -p 5432 -U flowsync -d flowsync_dev']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+
+  # Base de pruebas. Efímera a propósito: el directorio de datos va en tmpfs
+  # (memoria), así que cada arranque empieza vacío. El tmpfs es necesario, no
+  # basta con no declarar volumen: la imagen declara VOLUME sobre ese
+  # directorio y Docker crearía un volumen anónimo que conservaría los datos.
+  db-test:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: flowsync
+      POSTGRES_PASSWORD: flowsync
+      POSTGRES_DB: flowsync_test
+    ports:
+      - '127.0.0.1:54411:5432'
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -h 127.0.0.1 -p 5432 -U flowsync -d flowsync_test']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+
+volumes:
+  db-data:
