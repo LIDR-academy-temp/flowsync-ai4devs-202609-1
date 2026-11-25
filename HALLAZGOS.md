@@ -9,18 +9,18 @@ repite el correo o el secreto, eso es otra copia del dato (y también es un hall
 
 ## 1. La regla que saltó
 
-Qué regla saltó en tu prueba, y la línea literal que dejó el registro.
+
+Se activó la regla de no incluir el mail. Me avisó de que no se iba a hacer el commit. 
 
 -
 
 ## 2. Lo que el hook no puede cazar
 
-Un dato personal o un secreto de este proyecto que el hook NO puede cazar, y por qué.
-
+En el mail, se filtran datos personales en lo que va antes del dominio (ana.pérez). Hay que revisar eso. También se filtra la contraseña porque está como ejemplo. 
 -
 
 ## 3. Tu duda
 
-De qué dudaste, o qué no pudiste comprobar.
+Si el dato confidencial queda en el disco y luego se borra el hook, se podría acabar subiendo accidentalmente? Cómo proteger mejor los hook? 
 
 -
