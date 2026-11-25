@@ -134,3 +134,9 @@ La URL de la API sale de `VITE_API_URL` (ver `frontend/.env.example`); por defec
 - Un cambio que toque rutas, controladores, validadores o transformers de una capability se cierra en el mismo commit con el documento OpenAPI y el README de esa capability al día. El documento se construye en cada petición y no hay fichero que generar, así que lo que se commitea es el diff regenerado de `.adonisjs/`; el README es `docs/capabilities/<nombre>/README.md`.
 - `gh pr create` (con una descripción completa de los cambios en el cuerpo del PR) y el pase del subagente `adversarial-reviewer` sobre ese PR van **una sola vez, al terminar la unidad de trabajo**, no al cerrar cada petición. El review adversarial es lo último, antes de dar la unidad por terminada.
 - Cuando abras el PR, no repitas ese resumen en el chat: la sesión se va a perder, el PR no. Responde solo con la URL del PR.
+- **Hook `datos-que-no-salen`** (`.claude/hooks/datos-que-no-salen.sh`, `PreToolUse` sobre `Bash` en `.claude/settings.json`). Revisa cada `git commit`: las líneas añadidas del diff preparado y, si el comando incluye `git add`, también lo no preparado y lo nuevo. Bloquea tres cosas:
+  1. Claves con forma reconocible: AWS, Anthropic, GitHub, Google, Slack, bloques de clave privada y `APP_KEY` con valor.
+  2. Correos cuyo dominio no sea example.com/.org/.net ni github.com.
+  3. Ficheros `.env`.
+
+  Si te bloquea, **no lo desactives ni te lo saltes**: nada de `--no-verify`, ni de tocar `settings.json`, ni de partir el comando para esquivarlo. Sustituye el dato por uno inventado que cumpla las reglas (por ejemplo, un correo de example.com) y vuelve a intentarlo. El registro `docs/seguridad/registro-de-bloqueos.md` va en el commit con el resto del trabajo: es la evidencia del bloqueo, y nunca contiene el valor detectado.
