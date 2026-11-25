@@ -6,19 +6,30 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 FlowSync: proyecto de práctica del curso (gestión de tareas en equipo). Monorepo sin workspaces ni `package.json` raíz — **todos los comandos se ejecutan desde `backend/` o desde `frontend/`**.
 
-- `backend/` — API AdonisJS 7 + Lucid 22 + SQLite, escucha en `http://localhost:3333`
+- `backend/` — API AdonisJS 7 + Lucid 22 + PostgreSQL 17 (Docker, `compose.yaml` en la raíz), escucha en `http://localhost:3333`
 - `frontend/` — React 19 + Vite 8, escucha en `http://localhost:5173`
 
 La rama `s1/start` es el punto de partida de los alumnos; `main` es la base del repo cliente.
 
 ## Comandos
 
+### Bases de datos (desde la raíz)
+
+`compose.yaml` declara dos PostgreSQL (`pgvector/pgvector:pg17`): `db` para desarrollo en `127.0.0.1:54410`, con volumen, y `db-test` para pruebas en `127.0.0.1:54411`, en tmpfs (se vacía en cada arranque). Hace falta Docker con el daemon arrancado.
+
+```bash
+make db-up        # docker compose up -d --wait: vuelve cuando los dos healthchecks dan sano
+make db-down      # para las dos (la de pruebas se pierde; la de desarrollo, no)
+make db-migrate   # migra las dos (la de pruebas con NODE_ENV=test)
+make test         # levanta y migra db-test, y corre la batería del backend
+```
+
 ### Backend (`cd backend`)
 
 ```bash
 npm install
 cp .env.example .env && node ace generate:key   # solo la primera vez
-node ace migration:run                          # crea tmp/db.sqlite3 y regenera database/schema.ts
+node ace migration:run                          # migra la base de desarrollo (:54410) y regenera database/schema.ts
 npm run dev                                     # node ace serve --hmr
 npm test                                        # node ace test
 npm run openapi:generate                        # escribe el documento OpenAPI en docs/api/openapi.json
@@ -38,7 +49,7 @@ node ace test --groups=... --tags=... --failed --watch
 node ace make:test --suite=functional # scaffolding de un fichero de test
 ```
 
-Ojo con la BD en tests: `config/database.ts` define una única conexión SQLite apuntando a `app.tmpPath('db.sqlite3')` sin override por entorno, así que las suites functional pegan contra el **mismo fichero** que el servidor de desarrollo. `.env.test` solo cambia `SESSION_DRIVER=memory`. Si añades tests que escriben, aísla con los hooks de `testUtils.db()` (truncate / transacción global) o el estado se filtra entre runs.
+BD en tests: `config/database.ts` define una única conexión `pg` que lee las variables `DB_*` del entorno. `bin/test.ts` fija `NODE_ENV=test` y el framework carga entonces `.env.test` (con prioridad sobre `.env`), que apunta a `db-test` (`DB_PORT=54411`, `DB_DATABASE=flowsync_test`) además de `SESSION_DRIVER=memory`. Esa base está en memoria: hay que migrarla tras cada arranque (`make test` lo hace; a mano, `NODE_ENV=test node ace migration:run`). Los tests aíslan cada caso con `testUtils.db().withGlobalTransaction()`; si añades tests que escriben, haz lo mismo.
 
 Otros comandos útiles: `node ace list:routes`, `node ace make:controller|model|migration|validator|transformer|service`, `node ace migration:fresh`, `node ace repl`.
 
