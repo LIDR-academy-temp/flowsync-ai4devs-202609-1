@@ -7,10 +7,10 @@ import testUtils from '@adonisjs/core/services/test_utils'
  * «Validación de los datos de registro» y «Un email, una sola cuenta» de
  * `openspec/specs/auth/spec.md`.
  *
- * El aislamiento es una transacción global y no un truncate a propósito: la
- * suite functional pega contra el mismo fichero SQLite que el servidor de
- * desarrollo (`config/database.ts` no tiene override por entorno), y vaciarlo
- * se llevaría por delante los datos con los que se está trabajando.
+ * El aislamiento es una transacción global y no un truncate: la suite functional
+ * pega contra la base de pruebas (`.env.test`, servicio `db-test`), y la
+ * transacción basta para que un test no filtre estado al siguiente sin pagar
+ * el coste de vaciar tablas.
  */
 test.group('Auth | registro', (group) => {
   group.each.setup(() => testUtils.db().withGlobalTransaction())
