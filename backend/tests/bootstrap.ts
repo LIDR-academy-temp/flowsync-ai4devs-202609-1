@@ -4,7 +4,9 @@ import app from '@adonisjs/core/services/app'
 import type { Config } from '@japa/runner/types'
 import { pluginAdonisJS } from '@japa/plugin-adonisjs'
 import { dbAssertions } from '@adonisjs/lucid/plugins/db'
+import db from '@adonisjs/lucid/services/db'
 import testUtils from '@adonisjs/core/services/test_utils'
+import { MigrationRunner } from '@adonisjs/lucid/migration'
 import { authApiClient } from '@adonisjs/auth/plugins/api_client'
 import { sessionApiClient } from '@adonisjs/session/plugins/api_client'
 import type { Registry } from '../.adonisjs/client/registry/schema.d.ts'
@@ -41,7 +43,23 @@ export const plugins: Config['plugins'] = [
  * The teardown functions are executed after all the tests
  */
 export const runnerHooks: Required<Pick<Config, 'setup' | 'teardown'>> = {
-  setup: [],
+  /**
+   * La base de pruebas vive en memoria (servicio `db-test`), así que tras cada
+   * arranque está vacía: la suite la migra antes de empezar.
+   *
+   * Se usa el `MigrationRunner` de Lucid y no `testUtils.db().migrate()`, porque
+   * este último arranca el kernel de Ace dentro del proceso de tests y carga
+   * todos los comandos de `commands/`, y la validación de `openapi_check.ts`
+   * falla en ese contexto. Las migraciones se quedan aplicadas al terminar: la
+   * base es efímera y se pierde al parar el contenedor.
+   */
+  setup: [
+    async () => {
+      const migrator = new MigrationRunner(db, app, { direction: 'up' })
+      await migrator.run()
+      if (migrator.error) throw migrator.error
+    },
+  ],
   teardown: [],
 }
 
