@@ -1,0 +1,45 @@
+# FlowSync — bases de datos PostgreSQL 17 (con pgvector) para desarrollo y pruebas.
+#
+# Arranca con `make db-up`: usa `docker compose up -d --wait`, que no devuelve el
+# control hasta que los dos servicios pasan su comprobación de salud.
+
+# La comprobación de salud va por TCP (`-h 127.0.0.1`) a propósito: en el primer
+# arranque la imagen inicializa la base con un servidor temporal que solo escucha
+# por socket Unix, así que un `pg_isready` por socket daría «sano» antes de tiempo.
+x-healthcheck: &healthcheck
+  test: ['CMD-SHELL', 'pg_isready -h 127.0.0.1 -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+  interval: 2s
+  timeout: 3s
+  retries: 30
+  start_period: 5s
+
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: flowsync
+      POSTGRES_PASSWORD: flowsync
+      POSTGRES_DB: flowsync_dev
+    ports:
+      - '54410:5432'
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck: *healthcheck
+
+  # Base de pruebas: en memoria y sin volumen. La imagen declara un VOLUME en el
+  # directorio de datos, así que sin el tmpfs Docker crearía un volumen anónimo
+  # que sobreviviría entre ejecuciones.
+  db-test:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: flowsync
+      POSTGRES_PASSWORD: flowsync
+      POSTGRES_DB: flowsync_test
+    ports:
+      - '54411:5432'
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck: *healthcheck
+
+volumes:
+  db-data:
