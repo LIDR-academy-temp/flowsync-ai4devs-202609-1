@@ -8,19 +8,18 @@ Escribe **una sola línea por punto**, con tus palabras y con lo que mediste, no
 
 ## 1. Las filas que cambian y la rama
 
-Cuántas filas cambian de valor en tu cambio de esquema, medido con una consulta, y en qué rama del
-árbol de reversibilidad cae. Si tu migración no toca datos, dilo tal cual: también es una respuesta.
+Mi migración cambia cero filas (el diff está vacío)
 
 -
 
 ## 2. Lo que la batería de pruebas no podía ver
 
-Una cosa que la batería de pruebas no podía ver. Si no encontraste ninguna, escribe qué buscaste y dónde.
+schema.ts solo declara qué tipo espera TypeScript. No dice qué valor devuelve el driver al leer la fila. 
 
 -
 
 ## 3. Tu duda
 
-De qué dudaste, o qué no pudiste comprobar.
+El arreglo del date. PosgreSQL soporta tipos de datos vector y SQLite no. 
 
 -
