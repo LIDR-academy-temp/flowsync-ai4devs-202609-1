@@ -53,3 +53,16 @@ Monta un hook de Claude Code en .claude/hooks/datos-que-no-salen.sh, registrado 
 ```
 
 **Qué salió:** lo montó y lo probó en un repo desechable (24 casos); la batería destapó un fallo propio —el `awk` del sistema no acepta `--` y con `git add` dejaba pasar los ficheros sin seguimiento en silencio— que corrigió antes de registrarlo.
+
+## Prompt 3
+
+**Modelo:** Sonnet 5.5 (effort high)
+**Herramienta:** Claude Code
+
+```
+Añade un bloque breve en la sección de reglas de proceso del CLAUDE.md del repositorio. Debe explicar que el hook existe, cuales son las tres cosas que bloquea y que se realiza ante un bloqueo: no se desactiva ni se salta, se sustituye el dato por uno inventado que cumpla las reglas y se vuelve a intentar. También debes indicar que el registro se incluye en el commit con el resto del trabajo, porque es la evidencia del bloqueo. AGENTS.md no se modifica: debes comprobar antes qué es.
+Antes de darlo por terminado, vas a probarlo: crea un archivo temporal con un correo de "gmail.com", ejecutar git add e intentar hacer un commit. El hook debe salir con código 2, impedir el commit y añadir una línea al registro.
+Después elimina el archivo temporal tanto del área de preparación como del directorio de trabajo. La línea del registro se conserva como primera evidencia de que el hook funcionó
+```
+
+**Qué salió:** comprobó que `AGENTS.md` es un enlace simbólico a `CLAUDE.md` y no lo tocó. El primer intento (`git add` y `git commit` en el mismo comando) se bloqueó entero, también el `git add`, así que lo repitió en dos pasos para probar el diff preparado: el registro quedó con dos líneas.
