@@ -8,19 +8,13 @@ Escribe **una sola línea por punto**, con tus palabras, y **sin el dato dentro*
 repite el correo o el secreto, eso es otra copia del dato (y también es un hallazgo, de los buenos).
 
 ## 1. La regla que saltó
-
-Qué regla saltó en tu prueba, y la línea literal que dejó el registro.
-
--
+La regla funcionó dejando en el registro: BLOQUEADO regla 2 (correo de una persona) en prueba-hook.tmp.tx
 
 ## 2. Lo que el hook no puede cazar
-
-Un dato personal o un secreto de este proyecto que el hook NO puede cazar, y por qué.
-
--
+- alguna clave que no tenga alguna de las formas expecificadas en la regla.
+- .env.test no se incluye en la regla 3 y ahi pudiera tenerse algún dato personal.
 
 ## 3. Tu duda
-
-De qué dudaste, o qué no pudiste comprobar.
+Comprobé los commit intentados por el agente pero tengo duda si se bloqueará lo que se intente desde la terminal sin un agente.
 
 -
